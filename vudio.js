@@ -4,7 +4,7 @@
  * @version 0.0.1
  */
 
- (function(factory){
+(function(factory){
 
     /*
      * 添加UMD支持
@@ -40,12 +40,25 @@
             verticalAlign : 'middle',
             prettify : true
         },
+        circlewave : {
+            maxHeight : 50,
+            minHeight : 1,
+            spacing : 1,
+            color : '#f42',
+            shadowBlur : 2,
+            shadowColor : '#c21',
+            fadeSide : false,
+            horizontalAlign : 'center',
+            verticalAlign : 'middle',
+            prettify : false,
+            circleRadius: 128,
+        },
         lighting : {
             maxHeight : 80,
             lineWidth: 0,
             color : '#f00',
-            shadowBlur : 0,
-            shadowColor : '#f00',
+            shadowBlur : 1,
+            shadowColor : '#c20',
             fadeSide : true,
             horizontalAlign : 'center',
             verticalAlign : 'middle'
@@ -221,6 +234,117 @@
 
                     });
                     __that.context2d.stroke();
+
+                },
+
+                circlewave: function(freqByteData) {
+                    var __circlewaveOption = __that.option.circlewave;
+                    var __fadeSide = __circlewaveOption.fadeSide;
+                    var __prettify = __circlewaveOption.prettify;
+                    var __freqByteData = __that.__rebuildData(freqByteData, __circlewaveOption.horizontalAlign);
+                    var __angle = Math.PI * 2 / __freqByteData.length;
+                    var __maxHeight, __width, __height, __left, __top, __color, __linearGradient, __pos;
+                    var circleRadius = __circlewaveOption.circleRadius || 80;
+
+                    if (__circlewaveOption.horizontalAlign !== 'center') {
+                        __fadeSide = false;
+                        __prettify = false;
+                    }
+
+                    // clear canvas
+                    __that.context2d.clearRect(0, 0, __that.width, __that.height);
+                    __that.context2d.save();
+                    __that.context2d.translate(__that.width / 2, __that.height / 2);
+
+
+                    // draw circlewave
+                    // console.warn('__freqBytesData: ', __freqByteData, ' first entry height: ', __freqByteData[1] / 256 * __circlewaveOption.maxHeight);
+                    __freqByteData.forEach(function(value, index){
+
+                        __width = (circleRadius * Math.PI - __that.option.accuracy * __circlewaveOption.spacing) / __that.option.accuracy;
+                        __left = index * (__width + __circlewaveOption.spacing);
+                        // need angle to rotate canvas for each bar.
+                        
+
+                        __circlewaveOption.spacing !== 1 && (__left += __circlewaveOption.spacing / 2);
+                        
+                        if (__prettify) {
+                            if (index <= __that.option.accuracy / 2) {
+                                __maxHeight = (1 - (__that.option.accuracy / 2 - 1 - index) / ( __that.option.accuracy / 2)) * __circlewaveOption.maxHeight;
+                            } else {
+                                __maxHeight = (1 - (index - __that.option.accuracy / 2) / ( __that.option.accuracy / 2)) * __circlewaveOption.maxHeight;
+                            }
+                        } else {
+                            __maxHeight = __circlewaveOption.maxHeight;
+                        }
+
+                        __height = value / 256 * __maxHeight;
+                        __height = __height < __circlewaveOption.minHeight ? __circlewaveOption.minHeight : __height;
+
+                        if (__circlewaveOption.verticalAlign === 'middle') {
+                            __top = (__that.height - __height) / 2;
+                        } else if (__circlewaveOption.verticalAlign === 'top') {
+                            __top = 0;
+                        } else if (__circlewaveOption.verticalAlign === 'bottom') {
+                            __top = __that.height - __height;
+                        } else {
+                            __top = (__that.height - __height) / 2;
+                        }
+
+                        __color = __circlewaveOption.color;
+
+                        if (__color instanceof Array) {
+
+                            __linearGradient = __that.context2d.createLinearGradient(
+                                __left,
+                                __top,
+                                __left,
+                                __top + __height
+                            );
+
+                            __color.forEach(function(color, index) {
+                                if (color instanceof Array) {
+                                    __pos = color[0];
+                                    color = color[1];
+                                } else if (index === 0 || index === __color.length - 1) {
+                                    __pos = index / (__color.length - 1);
+                                } else {
+                                    __pos =  index / __color.length + 0.5 / __color.length;
+                                }
+                                __linearGradient.addColorStop(__pos, color);
+                            });
+
+                            __that.context2d.fillStyle = __linearGradient;
+
+                        } else {
+                            __that.context2d.fillStyle = __color;
+                        }
+
+                        if (__circlewaveOption.shadowBlur > 0) {
+                            __that.context2d.shadowBlur = __circlewaveOption.shadowBlur;
+                            __that.context2d.shadowColor = __circlewaveOption.shadowColor;
+                        }
+
+                        if (__fadeSide) {
+                            if (index <= __that.option.accuracy / 2) {
+                                __that.context2d.globalAlpha = 1 - (__that.option.accuracy / 2 - 1 - index) / ( __that.option.accuracy / 2);
+                            } else {
+                                __that.context2d.globalAlpha = 1 - (index - __that.option.accuracy / 2) / ( __that.option.accuracy / 2);
+                            }
+                        } else {
+                           __that.context2d.globalAlpha = 1;
+                        }
+
+                        __that.context2d.save();
+                        __that.context2d.rotate(__angle * index);
+
+                        __that.context2d.fillRect(-__width / 2, circleRadius, __width, __height);
+                        __that.context2d.restore();
+                        __that.context2d.fill();
+
+                    });
+                    // need to restore canvas after translate to center..
+                    __that.context2d.restore();
 
                 },
 

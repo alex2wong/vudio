@@ -21,17 +21,17 @@
     }
     #canvas{
         position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
+        top: 50%;
+        left: 50%;
+        margin-left: -300px;
+        margin-top: -300px;
+        width: 600px;
+        height: 600px;
     }
     .controller{
         position: absolute;
         z-index: 5;
-        bottom: 30px;
+        bottom: 40px;
         left: 0;
         width: 100%;
         height: 40px;
@@ -89,6 +89,12 @@
             <button onclick="prettifyWaveform()">美化效果</button>
         </div>
         <div>
+            <button class="type type-1" onclick="changeType(0)">跳舞的柱</button>
+            <button class="type type-2" onclick="changeType(1)">围着跳舞</button>
+            <!-- <button class="type type-3" onclick="changeType(2)">跳舞的线~</button> -->
+            <!-- <button class="type type-4" onclick="changeType(3)"></button> -->
+        </div>
+        <div>
             <button class="color color-1" onclick="changeColor(0)"></button>
             <button class="color color-2" onclick="changeColor(1)"></button>
             <button class="color color-3" onclick="changeColor(2)"></button>
@@ -127,16 +133,22 @@
             [1, '#6072ff']
         ]
     ];
+    var types = ['waveform', 'circlewave', 'lighting'];
     var prettify = false;
     var canvas = $('#canvas');
     var audio = $('#audio');
     var vudio = new Vudio(audio, canvas, {
         effect: 'waveform',
-        accuracy: 256,
-        width: 1024,
-        height: 600,
+        accuracy: 128,
+        width: 800,
+        height: 800,
         waveform: {
-            maxHeight : 100,
+            maxHeight : 80,
+            spacing : 1,
+            shadowBlur: 6,
+            shadowColor : 'rgba(255,21,10,0.6)',
+            prettify: true,
+            fadeSide: true,
             color: [
                 [0, '#f00'],
                 [0.3, '#f00'],
@@ -151,9 +163,20 @@
     function $(selector) {
         return document.querySelector(selector);
     }
+    function changeType(index) {
+        vudio.setOption({
+            effect: types[index]
+        });
+    }
     function changeColor(index) {
         vudio.setOption({
             waveform : {
+                color: colors[index]
+            },
+            circlewave : {
+                color: colors[index]
+            },
+            lighting: {
                 color: colors[index]
             }
         });
@@ -163,7 +186,11 @@
             waveform : {
                 verticalAlign: type,
                 fadeSide: true
-            }
+            },
+            lighting: {
+                verticalAlign: type,
+                fadeSide: true
+            },
         });
     }
     function changePosH(type) {
@@ -171,14 +198,21 @@
             waveform : {
                 horizontalAlign: type,
                 fadeSide: true
-            }
+            },
+            lighting: {
+                horizontalAlign: type,
+                fadeSide: true
+            },
         });
     }
     function prettifyWaveform() {
         vudio.setOption({
             waveform : {
                 prettify: prettify
-            }
+            },
+            circlewave : {
+                prettify: prettify
+            },
         });
         prettify = !prettify;
     }
