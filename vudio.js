@@ -47,19 +47,20 @@
             color : '#f42',
             shadowBlur : 2,
             shadowColor : '#c21',
-            fadeSide : false,
+            fadeSide : true,
             horizontalAlign : 'center',
             verticalAlign : 'middle',
             prettify : false,
             circleRadius: 128,
         },
         lighting : {
-            maxHeight : 80,
-            lineWidth: 0,
+            maxHeight : 160,
+            lineWidth: 1,
             color : '#f00',
             shadowBlur : 1,
             shadowColor : '#c20',
             fadeSide : true,
+            prettify: true,
             horizontalAlign : 'center',
             verticalAlign : 'middle'
         }
@@ -196,8 +197,10 @@
 
                     var __lightingOption = __that.option.lighting;
                     var __freqByteData = __that.__rebuildData(freqByteData, __lightingOption.horizontalAlign);
-                    var __maxHeight = __lightingOption.maxHeight / 2;
-                    var __isStart = true, __fadeSide = true, __x, __y;
+                    var __maxHeight = __lightingOption.maxHeight;
+                    var __prettify = __lightingOption.prettify;
+                    var __color = __lightingOption.color;
+                    var __isStart = true, __fadeSide = true, __x, __y, __linearGradient;
 
                     if (__lightingOption.horizontalAlign !== 'center') {
                         __fadeSide = false;
@@ -208,21 +211,62 @@
 
                     // draw lighting
                     __that.context2d.lineWidth = __lightingOption.lineWidth;
-                    __that.context2d.strokeStyle = __lightingOption.color;
+                    __that.context2d.strokeStyle = __color instanceof Array ? __color[0] : __color;
+                    __that.context2d.fillStyle = 'rgba(200, 200, 200, .2)';
+                    __that.context2d.globalAlpha = .8;
                     __that.context2d.beginPath();
+
+                    if (__color instanceof Array) {
+
+                        __linearGradient = __that.context2d.createLinearGradient(
+                            0,
+                            __that.height / 2,
+                            __that.width,
+                            __that.height / 2
+                        );
+
+                        __color.forEach(function(color, index) {
+                            var __pos;
+                            if (color instanceof Array) {
+                                __pos = color[0];
+                                color = color[1];
+                            } else {
+                                __pos = index / __color.length;
+                                // ['#xxx', '#yyy']
+                            }
+                            __linearGradient.addColorStop(__pos, color);
+                        });
+
+                        __that.context2d.fillStyle = __linearGradient;
+
+                    } else {
+                        __that.context2d.fillStyle = __color;
+                    }
+
                     __freqByteData.forEach(function(value, index) {
 
+                        if (__prettify) {
+                            // prettify for line should be less maxHeight at tail.
+                            if (index < __that.option.accuracy / 2) {
+                                __maxHeight = (1 - (__that.option.accuracy / 2 - 1 - index) / ( __that.option.accuracy / 2)) * __lightingOption.maxHeight;
+                            } else {
+                                __maxHeight = (1 - (index - __that.option.accuracy / 2) / ( __that.option.accuracy / 2)) * __lightingOption.maxHeight;
+                            }
+                        } else {
+                            __maxHeight = __lightingOption.maxHeight;
+                        }
+
                         __x = __that.width / __that.option.accuracy * index;
-                        __y = value / 256 * __maxHeight;
+                        var __tmpY = value / 256 * __maxHeight;
 
                         if (__lightingOption.verticalAlign === 'middle') {
-                            __y = (__that.height - value) / 2 - __maxHeight / 2;
+                            __y = (__that.height - __tmpY) / 2;
                         } else if (__lightingOption.verticalAlign === 'bottom') {
-                            __y =  __that.height - value;
+                            __y =  __that.height - __tmpY;
                         } else if (__lightingOption.verticalAlign === 'top') {
-                            __y = value;
+                            __y = __tmpY;
                         } else {
-                            __y = (__that.height - value) / 2 - __maxHeight / 2;
+                            __y = (__that.height - __tmpY) / 2;
                         }
 
                         if (__isStart) {
@@ -234,7 +278,7 @@
 
                     });
                     __that.context2d.stroke();
-
+                    __that.context2d.fill();
                 },
 
                 circlewave: function(freqByteData) {

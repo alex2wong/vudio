@@ -91,7 +91,7 @@
         <div>
             <button class="type type-1" onclick="changeType(0)">跳舞的柱</button>
             <button class="type type-2" onclick="changeType(1)">围着跳舞</button>
-            <!-- <button class="type type-3" onclick="changeType(2)">跳舞的线~</button> -->
+            <button class="type type-3" onclick="changeType(2)">跳舞的线~</button>
             <!-- <button class="type type-4" onclick="changeType(3)"></button> -->
         </div>
         <div>
@@ -182,27 +182,23 @@
         });
     }
     function changePosV(type) {
+        var option = {
+            verticalAlign: type,
+            fadeSide: true
+        };
         vudio.setOption({
-            waveform : {
-                verticalAlign: type,
-                fadeSide: true
-            },
-            lighting: {
-                verticalAlign: type,
-                fadeSide: true
-            },
+            waveform : option,
+            lighting: option,
         });
     }
     function changePosH(type) {
+        var option = {
+            horizontalAlign: type,
+            fadeSide: true
+        };
         vudio.setOption({
-            waveform : {
-                horizontalAlign: type,
-                fadeSide: true
-            },
-            lighting: {
-                horizontalAlign: type,
-                fadeSide: true
-            },
+            waveform : option,
+            lighting: option,
         });
     }
     function prettifyWaveform() {
