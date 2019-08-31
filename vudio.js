@@ -253,9 +253,14 @@
 
                     // clear canvas
                     __that.context2d.clearRect(0, 0, __that.width, __that.height);
+                    __that.context2d.beginPath();
                     __that.context2d.save();
                     __that.context2d.translate(__that.width / 2, __that.height / 2);
 
+                    if (__circlewaveOption.shadowBlur > 0) {
+                        __that.context2d.shadowBlur = __circlewaveOption.shadowBlur;
+                        __that.context2d.shadowColor = __circlewaveOption.shadowColor;
+                    }
 
                     // draw circlewave
                     // console.warn('__freqBytesData: ', __freqByteData, ' first entry height: ', __freqByteData[1] / 256 * __circlewaveOption.maxHeight);
@@ -264,7 +269,6 @@
                         __width = (circleRadius * Math.PI - __that.option.accuracy * __circlewaveOption.spacing) / __that.option.accuracy;
                         __left = index * (__width + __circlewaveOption.spacing);
                         // need angle to rotate canvas for each bar.
-                        
 
                         __circlewaveOption.spacing !== 1 && (__left += __circlewaveOption.spacing / 2);
                         
@@ -320,11 +324,6 @@
                             __that.context2d.fillStyle = __color;
                         }
 
-                        if (__circlewaveOption.shadowBlur > 0) {
-                            __that.context2d.shadowBlur = __circlewaveOption.shadowBlur;
-                            __that.context2d.shadowColor = __circlewaveOption.shadowColor;
-                        }
-
                         if (__fadeSide) {
                             if (index <= __that.option.accuracy / 2) {
                                 __that.context2d.globalAlpha = 1 - (__that.option.accuracy / 2 - 1 - index) / ( __that.option.accuracy / 2);
@@ -337,7 +336,6 @@
 
                         __that.context2d.save();
                         __that.context2d.rotate(__angle * index);
-
                         __that.context2d.fillRect(-__width / 2, circleRadius, __width, __height);
                         __that.context2d.restore();
                         __that.context2d.fill();
