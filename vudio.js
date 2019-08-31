@@ -450,7 +450,8 @@
 
         // 开始
         dance : function() {
-            if (this.stat === 0) {
+            if (this.stat === 0 || this.analyser.context.state === 'suspended') {
+                this.analyser.context.resume();
                 this.stat = 1;
                 this.__animate();
             }
