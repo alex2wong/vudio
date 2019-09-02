@@ -228,15 +228,14 @@
                         );
 
                         __color.forEach(function(color, index) {
-                            var __pos;
+                            var __pos, effectiveColor;
                             if (color instanceof Array) {
-                                __pos = color[0];
-                                color = color[1];
+                                effectiveColor = color[1];
                             } else {
-                                __pos = index / __color.length;
-                                // ['#xxx', '#yyy']
+                                effectiveColor = color;
                             }
-                            __linearGradient.addColorStop(__pos, color);
+                            __pos = index / __color.length;
+                            __linearGradient.addColorStop(__pos, effectiveColor);
                         });
 
                         __that.context2d.fillStyle = __linearGradient;
@@ -438,6 +437,7 @@
 
                     // clear canvas
                     __that.context2d.clearRect(0, 0, __that.width, __that.height);
+                    __that.context2d.globalCompositeOperation = 'lighter';
 
                     // draw waveform
                     __freqByteData.forEach(function(value, index){
@@ -536,6 +536,7 @@
         // 暂停
         pause : function() {
             this.stat = 0;
+            //// for saving CPU, could cancle animation.
             return this;
         },
 
