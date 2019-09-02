@@ -1,5 +1,8 @@
 # vudio.js
 ### 一个简单的音频数据可视化模块
+
+![](https://upload-images.jianshu.io/upload_images/1950967-1eb6e07d93883fbb.gif?imageMogr2/auto-orient/strip)
+
 ------
 #### 概述：
 - 支持诸多样式调整
