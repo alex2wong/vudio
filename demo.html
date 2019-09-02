@@ -10,14 +10,21 @@
         margin: 0;
         padding: 0;
         overflow: hidden;
-        background-color: #51074b;
-    }
-    body{
+        background-color: #31002d;
     }
     .container{
         position: relative;
         width: 100%;
         height: 100%;
+    }
+    #bg {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-image: url('./demo_src/cover.jpg');
+        background-size: cover;
+        background-position: center;
+        filter: blur(5px);
     }
     #canvas{
         position: absolute;
@@ -112,6 +119,7 @@
             <button class="pos-h" onclick="changePosH('right')">右</button>
         </div>
     </div>
+    <script src="./src/particle.js"></script>
     <script src="./vudio.js"></script>
     <script>
     var colors = [
@@ -124,7 +132,7 @@
             [1, '#ff0']
         ],
         '#ff0',
-        ['#00f', '#06f',' #09f', '#0ff'],
+        ['#06f', '#09f',' #0Cf', '#0ff'],
         ['#fb6d6b', '#c10056',' #a50053', '#51074b'],
         [
             [0, '#ff422d'],
@@ -142,6 +150,12 @@
         accuracy: 128,
         width: 800,
         height: 800,
+        circlewave: {
+            circleRadius: 200,
+            fadeSide: false,
+            shadowBlur : 4,
+            shadowColor: 'rgba(244,244,244,.5)',
+        },
         waveform: {
             maxHeight : 80,
             spacing : 1,

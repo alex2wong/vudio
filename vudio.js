@@ -51,6 +51,7 @@
             horizontalAlign : 'center',
             verticalAlign : 'middle',
             prettify : false,
+            particle: true,
             circleRadius: 128,
         },
         lighting : {
@@ -89,6 +90,7 @@
 
         this.stat = 0;
         this.freqByteData = null;
+        this.particles = [];
 
         this.__init();
 
@@ -278,6 +280,7 @@
 
                     });
                     __that.context2d.stroke();
+                    __that.context2d.globalAlpha = .8;
                     __that.context2d.fill();
                 },
 
@@ -289,6 +292,8 @@
                     var __angle = Math.PI * 2 / __freqByteData.length;
                     var __maxHeight, __width, __height, __left, __top, __color, __linearGradient, __pos;
                     var circleRadius = __circlewaveOption.circleRadius || 80;
+                    var __particle = __circlewaveOption.particle;
+                    var __progress = __that.audioSrc.currentTime / __that.audioSrc.duration;
 
                     if (__circlewaveOption.horizontalAlign !== 'center') {
                         __fadeSide = false;
@@ -297,14 +302,33 @@
 
                     // clear canvas
                     __that.context2d.clearRect(0, 0, __that.width, __that.height);
-                    __that.context2d.beginPath();
                     __that.context2d.save();
-                    __that.context2d.translate(__that.width / 2, __that.height / 2);
+                    __that.context2d.translate(__that.width / 2 - .5, __that.height / 2 - .5);
 
+                    // generate and render particles if enabled 
+                    if (__particle) {
+                        const deg = Math.random() * Math.PI * 2;
+                        __that.particles.push(new Particle({
+                            x: (circleRadius + 20) * Math.sin(deg),
+                            y : (circleRadius + 20) * Math.cos(deg),
+                            vx: .3 * Math.sin(deg) + Math.random()*.5 - .3,
+                            vy: .3 * Math.cos(deg) + Math.random()*.5 - .3,
+                            life: Math.random() * 10,
+                            // color: __circlewaveOption.color
+                        }));
+                        // should clean dead particle before render.
+                        if (__that.particles.length > 200) {
+                            __that.particles.shift();
+                        }
+                        __that.particles.forEach((dot) => { dot.update(__that.context2d); });
+                    }
+                    
                     if (__circlewaveOption.shadowBlur > 0) {
                         __that.context2d.shadowBlur = __circlewaveOption.shadowBlur;
                         __that.context2d.shadowColor = __circlewaveOption.shadowColor;
                     }
+
+                    __that.context2d.beginPath();
 
                     // draw circlewave
                     // console.warn('__freqBytesData: ', __freqByteData, ' first entry height: ', __freqByteData[1] / 256 * __circlewaveOption.maxHeight);
@@ -385,6 +409,15 @@
                         __that.context2d.fill();
 
                     });
+
+                    // draw progress circular.
+                    __that.context2d.strokeStyle = __linearGradient || __color;
+                    __that.context2d.lineWidth = 4;
+                    __that.context2d.lineCap = 'round';
+                    __that.context2d.shadowBlur = 8;
+                    __that.context2d.arc(0, 0, circleRadius - 10, -Math.PI/2, Math.PI * 2 * __progress - Math.PI/2 );
+                    // __that.context2d.arc()
+                    __that.context2d.stroke();
                     // need to restore canvas after translate to center..
                     __that.context2d.restore();
 
