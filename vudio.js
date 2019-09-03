@@ -44,9 +44,9 @@
             maxHeight : 50,
             minHeight : 1,
             spacing : 1,
-            color : '#f42',
+            color : '#fb6d6b',
             shadowBlur : 2,
-            shadowColor : '#c21',
+            shadowColor : '#caa',
             fadeSide : true,
             horizontalAlign : 'center',
             verticalAlign : 'middle',
@@ -149,17 +149,22 @@
             this.context2d.canvas.width = this.width * dpr;
             this.context2d.canvas.height = this.height * dpr;
             this.context2d.scale(dpr, dpr);
+            this.context2d.globalCompositeOperation = 'lighter';
+
 
             // prepare for coverImage
             this.coverImg.src = this.option.circlewave.coverImg || '';
 
             // listen click on vudioEle
             this.canvasEle.addEventListener('click', (function(){
-                if (this.stat === 0) {
+                // if (this.stat === 0) {
+                    this.audioSrc.play();
                     this.dance();
-                } else {
-                    this.pause();
-                }
+                // } 
+                // else {
+                //     this.audioSrc.pause();
+                //     this.pause();
+                // }
             }).bind(this)
             );
 
@@ -476,7 +481,6 @@
 
                     // clear canvas
                     __that.context2d.clearRect(0, 0, __that.width, __that.height);
-                    __that.context2d.globalCompositeOperation = 'lighter';
 
                     // draw waveform
                     __freqByteData.forEach(function(value, index){
