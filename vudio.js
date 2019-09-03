@@ -52,7 +52,9 @@
             verticalAlign : 'middle',
             prettify : false,
             particle: true,
+            maxParticle: 100,
             circleRadius: 128,
+            showProgress: true,
         },
         lighting : {
             maxHeight : 160,
@@ -91,6 +93,7 @@
         this.stat = 0;
         this.freqByteData = null;
         this.particles = [];
+        this.coverImg = new Image();
 
         this.__init();
 
@@ -146,6 +149,19 @@
             this.context2d.canvas.width = this.width * dpr;
             this.context2d.canvas.height = this.height * dpr;
             this.context2d.scale(dpr, dpr);
+
+            // prepare for coverImage
+            this.coverImg.src = this.option.circlewave.coverImg || '';
+
+            // listen click on vudioEle
+            this.canvasEle.addEventListener('click', (function(){
+                if (this.stat === 0) {
+                    this.dance();
+                } else {
+                    this.pause();
+                }
+            }).bind(this)
+            );
 
         },
 
@@ -290,8 +306,10 @@
                     var __freqByteData = __that.__rebuildData(freqByteData, __circlewaveOption.horizontalAlign);
                     var __angle = Math.PI * 2 / __freqByteData.length;
                     var __maxHeight, __width, __height, __left, __top, __color, __linearGradient, __pos;
-                    var circleRadius = __circlewaveOption.circleRadius || 80;
+                    var circleRadius = __circlewaveOption.circleRadius;
                     var __particle = __circlewaveOption.particle;
+                    var __maxParticle = __circlewaveOption.maxParticle;
+                    var __showProgress = __circlewaveOption.showProgress;
                     var __progress = __that.audioSrc.currentTime / __that.audioSrc.duration;
 
                     if (__circlewaveOption.horizontalAlign !== 'center') {
@@ -316,7 +334,7 @@
                             // color: __circlewaveOption.color
                         }));
                         // should clean dead particle before render.
-                        if (__that.particles.length > 200) {
+                        if (__that.particles.length > __maxParticle) {
                             __that.particles.shift();
                         }
                         __that.particles.forEach((dot) => { dot.update(__that.context2d); });
@@ -410,13 +428,34 @@
                     });
 
                     // draw progress circular.
-                    __that.context2d.strokeStyle = __linearGradient || __color;
-                    __that.context2d.lineWidth = 4;
-                    __that.context2d.lineCap = 'round';
-                    __that.context2d.shadowBlur = 8;
-                    __that.context2d.arc(0, 0, circleRadius - 10, -Math.PI/2, Math.PI * 2 * __progress - Math.PI/2 );
-                    // __that.context2d.arc()
-                    __that.context2d.stroke();
+                    if (__showProgress) {
+                        __that.context2d.strokeStyle = __linearGradient || __color;
+                        __that.context2d.lineWidth = 4;
+                        __that.context2d.lineCap = 'round';
+                        __that.context2d.shadowBlur = 8;
+                        __that.context2d.arc(0, 0, circleRadius - 10, -Math.PI/2, Math.PI * 2 * __progress - Math.PI/2 );     
+                        __that.context2d.stroke();
+                    }
+
+                    // draw cover image
+                    if (__that.coverImg.width !== 0) {
+                        var img = __that.coverImg;
+                        __that.context2d.save();
+                        __that.context2d.beginPath();
+                        __that.context2d.lineWidth = .5;
+                        __that.context2d.globalCompositeOperation = 'source-over';
+                        __that.context2d.rotate(Math.PI * 2 * __progress/2);
+                        __that.context2d.arc(0, 0, circleRadius - 13, -Math.PI/2, Math.PI * 2 - Math.PI/2 );
+                        __that.context2d.stroke();
+                        __that.context2d.clip();
+                        if (img.width/img.height > 1) {
+                            var croppedImgWidth = circleRadius*2*(img.width-img.height)/(img.height);
+                            __that.context2d.drawImage(img, -circleRadius-10-croppedImgWidth/2, -circleRadius-10,circleRadius*2*img.width/img.height,circleRadius*2);
+                        } else {
+                            __that.context2d.drawImage(img, -circleRadius-10, -circleRadius-10,circleRadius*2,circleRadius*2*img.height/img.width);
+                        }
+                        __that.context2d.restore();
+                    }
                     // need to restore canvas after translate to center..
                     __that.context2d.restore();
 
