@@ -100,7 +100,7 @@
             <button class="type type-1" onclick="changeType(0)">跳舞的柱</button>
             <button class="type type-2" onclick="changeType(1)">围着跳舞</button>
             <button class="type type-3" onclick="changeType(2)">跳舞的线~</button>
-            <!-- <button class="type type-4" onclick="changeType(3)"></button> -->
+            <button class="type type-4" onclick="changeType(3)">跳舞的圈</button>
         </div>
         <div>
             <button class="color color-1" onclick="changeColor(0)"></button>
@@ -142,7 +142,7 @@
             [1, '#6072ff']
         ]
     ];
-    var types = ['waveform', 'circlewave', 'lighting'];
+    var types = ['waveform', 'circlebar','lighting', 'circlewave'];
     var prettify = false;
     var canvas = $('#canvas');
     var audio = $('#audio');
@@ -151,13 +151,19 @@
         accuracy: 128,
         width: 800,
         height: 800,
-        circlewave: {
+        circlebar: {
             circleRadius: 200,
             fadeSide: false,
             shadowBlur : 4,
             shadowColor: 'rgba(244,244,244,.5)',
             coverImg: './demo_src/nuanchun.jpg',
-
+        },
+        circlewave: {
+            circleRadius: 200,
+            fadeSide: true,
+            shadowBlur : 4,
+            shadowColor: 'rgba(244,244,244,.5)',
+            coverImg: './demo_src/nuanchun.jpg',
         },
         waveform: {
             maxHeight : 160,

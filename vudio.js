@@ -41,6 +41,20 @@
             prettify : true
         },
         circlewave : {
+            maxHeight : 20,
+            minHeight : -5,
+            spacing : 1,
+            color : '#fcc',
+            shadowBlur : 2,
+            shadowColor : '#caa',
+            fadeSide : true,
+            prettify : false,
+            particle: true,
+            maxParticle: 100,
+            circleRadius: 128,
+            showProgress: true,
+        },
+        circlebar: {
             maxHeight : 50,
             minHeight : 1,
             spacing : 1,
@@ -48,8 +62,6 @@
             shadowBlur : 2,
             shadowColor : '#caa',
             fadeSide : true,
-            horizontalAlign : 'center',
-            verticalAlign : 'middle',
             prettify : false,
             particle: true,
             maxParticle: 100,
@@ -157,14 +169,14 @@
 
             // listen click on vudioEle
             this.canvasEle.addEventListener('click', (function(){
-                // if (this.stat === 0) {
+                if (this.stat === 0) {
                     this.audioSrc.play();
                     this.dance();
-                // } 
-                // else {
-                //     this.audioSrc.pause();
-                //     this.pause();
-                // }
+                }
+                else {
+                    this.pause();
+                    this.audioSrc.pause();
+                }
             }).bind(this)
             );
 
@@ -300,7 +312,7 @@
 
                     });
                     __that.context2d.stroke();
-                    __that.context2d.globalAlpha = .8;
+                    __that.context2d.globalAlpha = .6;
                     __that.context2d.fill();
                 },
 
@@ -316,6 +328,8 @@
                     var __maxParticle = __circlewaveOption.maxParticle;
                     var __showProgress = __circlewaveOption.showProgress;
                     var __progress = __that.audioSrc.currentTime / __that.audioSrc.duration;
+                    var __isStart = true;
+                    __color = __circlewaveOption.color;
 
                     if (__circlewaveOption.horizontalAlign !== 'center') {
                         __fadeSide = false;
@@ -325,6 +339,8 @@
                     // clear canvas
                     __that.context2d.clearRect(0, 0, __that.width, __that.height);
                     __that.context2d.save();
+                    __that.context2d.lineWidth = 4;
+                    __that.context2d.fillStyle = 'rgba(200, 200, 200, .2)';
                     __that.context2d.translate(__that.width / 2 - .5, __that.height / 2 - .5);
 
                     // generate and render particles if enabled 
@@ -353,13 +369,10 @@
                     __that.context2d.beginPath();
 
                     // draw circlewave
-                    // console.warn('__freqBytesData: ', __freqByteData, ' first entry height: ', __freqByteData[1] / 256 * __circlewaveOption.maxHeight);
                     __freqByteData.forEach(function(value, index){
 
                         __width = (circleRadius * Math.PI - __that.option.accuracy * __circlewaveOption.spacing) / __that.option.accuracy;
                         __left = index * (__width + __circlewaveOption.spacing);
-                        // need angle to rotate canvas for each bar.
-
                         __circlewaveOption.spacing !== 1 && (__left += __circlewaveOption.spacing / 2);
                         
                         if (__prettify) {
@@ -375,17 +388,151 @@
                         __height = value / 256 * __maxHeight;
                         __height = __height < __circlewaveOption.minHeight ? __circlewaveOption.minHeight : __height;
 
-                        if (__circlewaveOption.verticalAlign === 'middle') {
+                        if (__color instanceof Array) {
+
+                            __linearGradient = __that.context2d.createLinearGradient(
+                                -circleRadius - __maxHeight,
+                                -circleRadius - __maxHeight,
+                                circleRadius + __maxHeight,
+                                circleRadius + __maxHeight
+                            );
+
+                            __color.forEach(function(color, index) {
+                                var __pos, effectiveColor;
+                                if (color instanceof Array) {
+                                    effectiveColor = color[1];
+                                } else {
+                                    effectiveColor = color;
+                                }
+                                __pos = index / __color.length;
+                                __linearGradient.addColorStop(__pos, effectiveColor);
+                            });
+                            
+                            __that.context2d.strokeStyle = __linearGradient;
+                            __that.context2d.fillStyle = __linearGradient;
+                        } else {
+                            __that.context2d.strokeStyle = __color;
+                            __that.context2d.fillStyle = __color;
+                        }
+
+                        if (__fadeSide) {
+                            if (index <= __that.option.accuracy / 2) {
+                                __that.context2d.globalAlpha = 1 - (__that.option.accuracy / 2 - 1 - index) / ( __that.option.accuracy / 2);
+                            } else {
+                                __that.context2d.globalAlpha = 1 - (index - __that.option.accuracy / 2) / ( __that.option.accuracy / 2);
+                            }
+                        } else {
+                           __that.context2d.globalAlpha = 1;
+                        }
+
+                        var curAngle = __angle * index;
+                        var __x = Math.sin(curAngle) * (circleRadius + __height);
+                        var __y = Math.cos(curAngle) * (circleRadius + __height); 
+
+                        // __that.context2d.rotate(__angle * index);
+                        if (__isStart) {
+                            __that.context2d.moveTo(__x, __y);
+                            __isStart = false;
+                        } else {
+                            __that.context2d.lineTo(__x, __y);
+                        }
+                    });
+                    var globalAlpha = __that.context2d.globalAlpha;
+                    __that.context2d.closePath();
+                    __that.context2d.stroke();
+                    __that.context2d.globalAlpha = .5;
+                    __that.context2d.fill();
+                    __that.context2d.globalAlpha = globalAlpha;
+
+                    if (__showProgress) { __that.drawProgress(__color, __progress, circleRadius); }
+                    __that.drawCover(__progress, circleRadius);
+
+                    // need to restore canvas after translate to center..
+                    __that.context2d.restore();
+                },
+
+                circlebar: function(freqByteData) {
+                    var __circlebarOption = __that.option.circlebar;
+                    var __fadeSide = __circlebarOption.fadeSide;
+                    var __prettify = __circlebarOption.prettify;
+                    var __freqByteData = __that.__rebuildData(freqByteData, __circlebarOption.horizontalAlign);
+                    var __angle = Math.PI * 2 / __freqByteData.length;
+                    var __maxHeight, __width, __height, __left, __top, __color, __linearGradient, __pos;
+                    var circleRadius = __circlebarOption.circleRadius;
+                    var __particle = __circlebarOption.particle;
+                    var __maxParticle = __circlebarOption.maxParticle;
+                    var __showProgress = __circlebarOption.showProgress;
+                    var __progress = __that.audioSrc.currentTime / __that.audioSrc.duration;
+
+                    if (__circlebarOption.horizontalAlign !== 'center') {
+                        __fadeSide = false;
+                        __prettify = false;
+                    }
+
+                    // clear canvas
+                    __that.context2d.clearRect(0, 0, __that.width, __that.height);
+                    __that.context2d.save();
+                    __that.context2d.translate(__that.width / 2 - .5, __that.height / 2 - .5);
+
+                    // generate and render particles if enabled 
+                    if (__particle) {
+                        const deg = Math.random() * Math.PI * 2;
+                        __that.particles.push(new Particle({
+                            x: (circleRadius + 20) * Math.sin(deg),
+                            y : (circleRadius + 20) * Math.cos(deg),
+                            vx: .3 * Math.sin(deg) + Math.random()*.5 - .3,
+                            vy: .3 * Math.cos(deg) + Math.random()*.5 - .3,
+                            life: Math.random() * 10,
+                            // color: __circlebarOption.color
+                        }));
+                        // should clean dead particle before render.
+                        if (__that.particles.length > __maxParticle) {
+                            __that.particles.shift();
+                        }
+                        __that.particles.forEach((dot) => { dot.update(__that.context2d); });
+                    }
+                    
+                    if (__circlebarOption.shadowBlur > 0) {
+                        __that.context2d.shadowBlur = __circlebarOption.shadowBlur;
+                        __that.context2d.shadowColor = __circlebarOption.shadowColor;
+                    }
+
+                    __that.context2d.beginPath();
+
+                    // draw circlebar
+                    // console.warn('__freqBytesData: ', __freqByteData, ' first entry height: ', __freqByteData[1] / 256 * __circlebarOption.maxHeight);
+                    __freqByteData.forEach(function(value, index){
+
+                        __width = (circleRadius * Math.PI - __that.option.accuracy * __circlebarOption.spacing) / __that.option.accuracy;
+                        __left = index * (__width + __circlebarOption.spacing);
+                        // need angle to rotate canvas for each bar.
+
+                        __circlebarOption.spacing !== 1 && (__left += __circlebarOption.spacing / 2);
+                        
+                        if (__prettify) {
+                            if (index <= __that.option.accuracy / 2) {
+                                __maxHeight = (1 - (__that.option.accuracy / 2 - 1 - index) / ( __that.option.accuracy / 2)) * __circlebarOption.maxHeight;
+                            } else {
+                                __maxHeight = (1 - (index - __that.option.accuracy / 2) / ( __that.option.accuracy / 2)) * __circlebarOption.maxHeight;
+                            }
+                        } else {
+                            __maxHeight = __circlebarOption.maxHeight;
+                        }
+
+                        __height = value / 256 * __maxHeight;
+                        __height = __height < __circlebarOption.minHeight ? __circlebarOption.minHeight : __height;
+
+                        if (__circlebarOption.verticalAlign === 'middle') {
                             __top = (__that.height - __height) / 2;
-                        } else if (__circlewaveOption.verticalAlign === 'top') {
+                        } else if (__circlebarOption.verticalAlign === 'top') {
                             __top = 0;
-                        } else if (__circlewaveOption.verticalAlign === 'bottom') {
+                        } else if (__circlebarOption.verticalAlign === 'bottom') {
                             __top = __that.height - __height;
                         } else {
                             __top = (__that.height - __height) / 2;
                         }
 
-                        __color = __circlewaveOption.color;
+                        __color = __circlebarOption.color;
 
                         if (__color instanceof Array) {
 
@@ -432,35 +579,9 @@
 
                     });
 
-                    // draw progress circular.
-                    if (__showProgress) {
-                        __that.context2d.strokeStyle = __linearGradient || __color;
-                        __that.context2d.lineWidth = 4;
-                        __that.context2d.lineCap = 'round';
-                        __that.context2d.shadowBlur = 8;
-                        __that.context2d.arc(0, 0, circleRadius - 10, -Math.PI/2, Math.PI * 2 * __progress - Math.PI/2 );     
-                        __that.context2d.stroke();
-                    }
-
-                    // draw cover image
-                    if (__that.coverImg.width !== 0) {
-                        var img = __that.coverImg;
-                        __that.context2d.save();
-                        __that.context2d.beginPath();
-                        __that.context2d.lineWidth = .5;
-                        __that.context2d.globalCompositeOperation = 'source-over';
-                        __that.context2d.rotate(Math.PI * 2 * __progress/2);
-                        __that.context2d.arc(0, 0, circleRadius - 13, -Math.PI/2, Math.PI * 2 - Math.PI/2 );
-                        __that.context2d.stroke();
-                        __that.context2d.clip();
-                        if (img.width/img.height > 1) {
-                            var croppedImgWidth = circleRadius*2*(img.width-img.height)/(img.height);
-                            __that.context2d.drawImage(img, -circleRadius-10-croppedImgWidth/2, -circleRadius-10,circleRadius*2*img.width/img.height,circleRadius*2);
-                        } else {
-                            __that.context2d.drawImage(img, -circleRadius-10, -circleRadius-10,circleRadius*2,circleRadius*2*img.height/img.width);
-                        }
-                        __that.context2d.restore();
-                    }
+                    if (__showProgress) { __that.drawProgress(__color, __progress, circleRadius); }
+                    __that.drawCover(__progress, circleRadius);
+                    
                     // need to restore canvas after translate to center..
                     __that.context2d.restore();
 
@@ -586,6 +707,41 @@
         // 改变参数
         setOption : function(option) {
             this.option = __mergeOption(this.option, option);
+        },
+
+        drawCover: function(__progress, circleRadius) {
+            var __that = this;
+            // draw cover image
+            if (__that.coverImg.width !== 0) {
+                var img = __that.coverImg;
+                __that.context2d.save();
+                __that.context2d.beginPath();
+                __that.context2d.lineWidth = .5;
+                __that.context2d.globalCompositeOperation = 'source-over';
+                __that.context2d.rotate(Math.PI * 2 * __progress/2);
+                __that.context2d.arc(0, 0, circleRadius - 13, -Math.PI/2, Math.PI * 2 - Math.PI/2 );
+                __that.context2d.stroke();
+                __that.context2d.clip();
+                if (img.width/img.height > 1) {
+                    var croppedImgWidth = circleRadius*2*(img.width-img.height)/(img.height);
+                    __that.context2d.drawImage(img, -circleRadius-10-croppedImgWidth/2, -circleRadius-10,circleRadius*2*img.width/img.height,circleRadius*2);
+                } else {
+                    __that.context2d.drawImage(img, -circleRadius-10, -circleRadius-10,circleRadius*2,circleRadius*2*img.height/img.width);
+                }
+                __that.context2d.restore();
+            }
+        },
+
+        drawProgress: function(__color, __progress, circleRadius) {
+            // draw progress circular.
+            var __that = this;
+            __that.context2d.beginPath();
+            __that.context2d.strokeStyle = __color;
+            __that.context2d.lineWidth = 4;
+            __that.context2d.lineCap = 'round';
+            __that.context2d.shadowBlur = 8;
+            __that.context2d.arc(0, 0, circleRadius - 10, -Math.PI/2, Math.PI * 2 * __progress - Math.PI/2 );     
+            __that.context2d.stroke();
         }
 
     };
