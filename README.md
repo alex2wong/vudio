@@ -3,6 +3,10 @@
 
 ![](https://upload-images.jianshu.io/upload_images/1950967-1eb6e07d93883fbb.gif?imageMogr2/auto-orient/strip)
 
+多種視覺效果:
+
+![多種視覺效果](https://github.com/alex2wong/vudio.js/blob/master/demo_src/snapshot.jpg?raw=true)
+
 ------
 #### 概述：
 - 支持诸多样式调整

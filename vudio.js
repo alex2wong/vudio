@@ -457,7 +457,7 @@
                     var __prettify = __circlebarOption.prettify;
                     var __freqByteData = __that.__rebuildData(freqByteData, __circlebarOption.horizontalAlign);
                     var __angle = Math.PI * 2 / __freqByteData.length;
-                    var __maxHeight, __width, __height, __left, __top, __color, __linearGradient, __pos;
+                    var __maxHeight, __width, __height, __left, __top, __color, __pos;
                     var circleRadius = __circlebarOption.circleRadius;
                     var __particle = __circlebarOption.particle;
                     var __maxParticle = __circlebarOption.maxParticle;
@@ -533,33 +533,8 @@
                         }
 
                         __color = __circlebarOption.color;
-
-                        if (__color instanceof Array) {
-
-                            __linearGradient = __that.context2d.createLinearGradient(
-                                __left,
-                                __top,
-                                __left,
-                                __top + __height
-                            );
-
-                            __color.forEach(function(color, index) {
-                                if (color instanceof Array) {
-                                    __pos = color[0];
-                                    color = color[1];
-                                } else if (index === 0 || index === __color.length - 1) {
-                                    __pos = index / (__color.length - 1);
-                                } else {
-                                    __pos =  index / __color.length + 0.5 / __color.length;
-                                }
-                                __linearGradient.addColorStop(__pos, color);
-                            });
-
-                            __that.context2d.fillStyle = __linearGradient;
-
-                        } else {
-                            __that.context2d.fillStyle = __color;
-                        }
+                        // since circlebar use ctx.rotate for each bar, so do NOT support gradient in bar currently.
+                        __that.context2d.fillStyle = __color instanceof Array ? __color[0] : __color;
 
                         if (__fadeSide) {
                             if (index <= __that.option.accuracy / 2) {
@@ -579,7 +554,7 @@
 
                     });
 
-                    if (__showProgress) { __that.drawProgress(__color, __progress, circleRadius); }
+                    if (__showProgress) { __that.drawProgress(__that.context2d.fillStyle, __progress, circleRadius); }
                     __that.drawCover(__progress, circleRadius);
                     
                     // need to restore canvas after translate to center..
