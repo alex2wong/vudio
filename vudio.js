@@ -70,7 +70,7 @@
         },
         lighting : {
             maxHeight : 160,
-            lineWidth: 1,
+            lineWidth: 2,
             color : '#f00',
             shadowBlur : 1,
             shadowColor : '#c20',
@@ -182,6 +182,19 @@
 
         },
 
+        __recreateAnalyzer() {
+            var audioContext = new (window.AudioContext || window.webkitAudioContext || window.mozAudioContext),
+                source = Object.prototype.toString.call(this.audioSrc) !== '[object MediaStream]' ?
+                audioContext.createMediaElementSource(this.audioSrc) : audioContext.createMediaStreamSource(this.audioSrc);
+
+            this.analyser = audioContext.createAnalyser();
+            this.meta.spr = audioContext.sampleRate;
+
+            source.connect(this.analyser);
+            this.analyser.fftSize = this.option.accuracy * 2;
+            this.analyser.connect(audioContext.destination);
+        },
+
         __rebuildData : function (freqByteData, horizontalAlign) {
 
             var __freqByteData;
@@ -204,6 +217,22 @@
 
             return __freqByteData;
 
+        },
+
+        readAudioSrc: function(fileEle, vudio, label) {
+            if (fileEle.files.length === 0) {
+                label.innerText = 'Drop audio file here to play'
+                return;
+            }
+            var file = fileEle.files[0];
+            var fr = new FileReader();
+            label.innerText = file.name;
+            fr.onload = function(evt) {
+                vudio.audioSrc.src = evt.target.result;
+                vudio.audioSrc.play();
+                vudio.dance();
+            }
+            fr.readAsDataURL(file);
         },
 
         __animate : function() {
@@ -246,7 +275,7 @@
 
                     // draw lighting
                     __that.context2d.lineWidth = __lightingOption.lineWidth;
-                    __that.context2d.strokeStyle = __color instanceof Array ? __color[0] : __color;
+                    __that.context2d.strokeStyle = 'rgba(200, 200, 200, .2)';
                     __that.context2d.fillStyle = 'rgba(200, 200, 200, .2)';
                     __that.context2d.globalAlpha = .8;
                     __that.context2d.beginPath();
@@ -272,9 +301,11 @@
                         });
 
                         __that.context2d.fillStyle = __linearGradient;
+                        __that.context2d.strokeStyle = __linearGradient;
 
                     } else {
                         __that.context2d.fillStyle = __color;
+                        __that.context2d.strokeStyle = __color;
                     }
 
                     __freqByteData.forEach(function(value, index) {
