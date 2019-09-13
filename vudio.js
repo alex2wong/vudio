@@ -221,11 +221,12 @@
 
         readAudioSrc: function(fileEle, vudio, label) {
             if (fileEle.files.length === 0) {
-                label.innerText = 'Drop audio file here to play'
+                label.innerText = 'Drop Audio file here to play'
                 return;
             }
             var file = fileEle.files[0];
             var fr = new FileReader();
+            if (file.type.indexOf('audio') !== 0) return;
             label.innerText = file.name;
             fr.onload = function(evt) {
                 vudio.audioSrc.src = evt.target.result;
