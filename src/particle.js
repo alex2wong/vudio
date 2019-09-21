@@ -11,7 +11,6 @@ function Particle(opt) {
     this.alpha = 1;
     this.rotate = 0;
     this.color = opt.color || 'rgba(244,244,244,.9)';
-    // there should be another class to render types of Particles.
 
     this.update = update;
     this.render = render;
@@ -29,7 +28,6 @@ function update(ctx) {
         this.dead = true;
         this.alpha = 0;
         return;
-        // should be get rid of Scene..
     }
     this.render(ctx);
 }
@@ -47,7 +45,3 @@ function render(ctx) {
     ctx.fill();
     ctx.globalAlpha = gA;
 }
-
-// function renderProgress(ctx: CanvasRenderingContext2D, circle, progress) {
-//     // render glowing Arc based on radius and Progress..
-// }

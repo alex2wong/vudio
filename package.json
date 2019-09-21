@@ -1,8 +1,9 @@
 {
   "name": "vudio.js",
   "version": "1.0.3",
-  "description": "仅供娱乐，开心就好",
-  "main": "vudio.js",
+  "description": "visualization audio using AudioContext and Canvas",
+  "main": "umd/vudio.js",
+  "files": ["umd"],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,10 +18,10 @@
     "waveform",
     "wave"
   ],
-  "author": "Margox",
+  "author": "Margox,Alex2wong",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/margox/vudio.js/issues"
+    "url": "https://github.com/alex2wong/vudio.js/issues"
   },
-  "homepage": "https://github.com/margox/vudio.js#readme"
+  "homepage": "https://github.com/alex2wong/vudio.js#readme"
 }

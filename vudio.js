@@ -1,7 +1,7 @@
 /**
  * Web音频数据可视化模块
  * @author Margox
- * @version 0.0.1
+ * @version 1.0.3
  */
 
 (function(factory){
