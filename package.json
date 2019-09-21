@@ -1,9 +1,11 @@
 {
   "name": "vudio",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "visualization audio using AudioContext and Canvas",
   "main": "umd/vudio.js",
-  "files": ["umd"],
+  "files": [
+    "umd"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
