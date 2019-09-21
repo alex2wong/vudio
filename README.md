@@ -22,11 +22,11 @@ npm i vudio --save
 yarn add vudio
 ```
 ```javascript
-import Vudio from 'vudio.js'
+import Vudio from 'vudio'
 ```
 using CDN:
 ```html
-<script src="https://unpkg.com/vudio@2.0.3/umd/vudio.js"></script>
+<script src="https://unpkg.com/vudio@2.0.4/umd/vudio.js"></script>
 ```
 Use Vudio
 ```javascript
