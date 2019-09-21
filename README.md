@@ -26,7 +26,7 @@ import Vudio from 'vudio.js'
 ```
 using CDN:
 ```html
-<script src="https://unpkg.com/vudio@2.0.3/umd/vudio.js"></script>
+<script src="https://unpkg.com/vudio@2.0.5/umd/vudio.js"></script>
 ```
 Use Vudio
 ```javascript

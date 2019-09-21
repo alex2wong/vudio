@@ -1,7 +1,7 @@
 /**
  * Web Audio Visualization
  * @author Margox
- * @version 2.0.3
+ * @version 2.0.5
  */
 
 (function(factory){
