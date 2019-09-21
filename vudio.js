@@ -1,13 +1,13 @@
 /**
- * Web音频数据可视化模块
+ * Web Audio Visualization
  * @author Margox
- * @version 1.0.3
+ * @version 2.0.3
  */
 
 (function(factory){
 
     /*
-     * 添加UMD支持
+     * Support UDM
      */
 
     if (typeof exports === 'object') {
@@ -22,7 +22,6 @@
 
     'use strict';
 
-    // 默认参数
     var __default_option = {
         effect : 'waveform',
         accuracy : 128,
@@ -82,10 +81,10 @@
     }
 
     /**
-     * 构造函数
+     * Constructor
      * @param {object} audioSource HTMLAudioSource/MediaStream
      * @param {object} canvasElement HTMLCanvasElement
-     * @param {object} option 可选配置参数
+     * @param {object} option Optional
      */
     function Vudio(audioSource, canvasElement, option) {
 
@@ -694,7 +693,6 @@
 
         },
 
-        // 开始
         dance : function() {
             if (this.stat === 0 || this.analyser.context.state === 'suspended') {
                 this.analyser.context.resume();
@@ -704,14 +702,12 @@
             return this;
         },
 
-        // 暂停
         pause : function() {
             this.stat = 0;
             //// for saving CPU, could cancle animation.
             return this;
         },
 
-        // 改变参数
         setOption : function(option) {
             this.option = __mergeOption(this.option, option);
         },

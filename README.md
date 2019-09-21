@@ -26,7 +26,7 @@ import Vudio from 'vudio.js'
 ```
 using CDN:
 ```html
-<script src="/path/to/vudio.js"></script>
+<script src="https://unpkg.com/vudio@2.0.3/umd/vudio.js"></script>
 ```
 Use Vudio
 ```javascript
@@ -38,12 +38,9 @@ vudio.dance();
 ```html
 <canvas width="256px" height="100px" id="canvas"></canvas>
 <audio src="./path/to/audio.mp3" controls id="audio"></audio>
-```
-import Vudio
-```html
 <script src="path/to/vudio.js"></script>
 ```
-> Since AudioContext can NOT use CORS resource, so make sure you have fully control of audio resource
+Since AudioContext can NOT use CORS resource, so make sure you have fully control of audio resource
 
 ```javascript
 var audioObj = document.querySelector('#audio');
