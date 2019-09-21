@@ -1,86 +1,77 @@
-# vudio.js
-### 一个简单的音频数据可视化模块
+# vudio
+### Visualization audio using AudioContext and Canvas
+
+Inspired and based on https://github.com/margox/vudio.js.git
 
 ![](https://upload-images.jianshu.io/upload_images/1950967-1eb6e07d93883fbb.gif?imageMogr2/auto-orient/strip)
 
-多種視覺效果:
+Many visual effect:
 
 ![多種視覺效果](https://github.com/alex2wong/vudio.js/blob/master/demo_src/snapshot.jpg?raw=true)
 
 ------
-#### 概述：
-- 支持诸多样式调整
-- 动画效果基于Canvas和requestAnimationFrame，丝般顺滑
-- 仅供娱乐，开心就好
+#### Features：
+- Support effect and custom styles
+- Animation based on Canvas and requestAnimationFrame
 
-#### 使用方法
+#### Install and use
 
-模块式引入
 ```bash
-# 使用npm安装此模块
-npm i vudio.js --save
-# 或者使用yarn安装此模块
-yarn add vudio.js
+npm i vudio --save
+# or install by yarn
+yarn add vudio
 ```
 ```javascript
 import Vudio from 'vudio.js'
 ```
-标签式引入
+using CDN:
 ```html
 <script src="/path/to/vudio.js"></script>
 ```
-实例化Vudio
+Use Vudio
 ```javascript
 var vudio = new Vudio(HTMLAudioElement | MediaStream, HTMLCanvasElement, [option]);
 vudio.dance();
 ```
-第一个参数用于指定音频源，可以是一个Audio标签，或者一个Audio对象，也可以是通过navigator.mediaDevices.getUserMedia获取到的音频MediaStream对象
 
-第二个参数用于指定显示可视化内容的Canvas，
-
-第三个参数用于指定显示效果的个性化配置
-
-#### 示例
-在你的HTML文件中放入canvas和audio标签
+#### Examples
 ```html
 <canvas width="256px" height="100px" id="canvas"></canvas>
 <audio src="./path/to/audio.mp3" controls id="audio"></audio>
 ```
-引入Vudio.js
+import Vudio
 ```html
 <script src="path/to/vudio.js"></script>
 ```
-> 注意，因为浏览器的同源策略，所以跨域情况下无法使用本模块（可在服务端进行控制）
+> Since AudioContext can NOT use CORS resource, so make sure you have fully control of audio resource
 
-开始搅基
 ```javascript
 var audioObj = document.querySelector('#audio');
 var canvasObj = document.querySelector('#canvas');
 var vudio = new Vudio(audioObj, canvasObj, {
-    effect : 'waveform', // 当前只有'waveform'这一个效果，哈哈哈
-    accuracy : 128, // 精度,实际表现为波形柱的个数，范围16-16348，必须为2的N次方
-    width : 256, // canvas宽度，会覆盖canvas标签中定义的宽度
-    height : 100, // canvas高度，会覆盖canvas标签中定义的高度
+    effect : 'waveform', // waveform, circlewave, circlebar, lighting (4 visual effect)
+    accuracy : 128, // number of freqBar, must be pow of 2.
+    width : 256, // canvas width
+    height : 100, // canvas height
     waveform : {
-        maxHeight : 80, // 最大波形高度
-        minHeight : 1, // 最小波形高度
-        spacing: 1, // 波形间隔
-        color : '#f00', // 波形颜色，可以传入数组以生成渐变色
-        shadowBlur : 0, // 阴影模糊半径
-        shadowColor : '#f00', // 阴影颜色
-        fadeSide : true, // 渐隐两端
-        horizontalAlign : 'center', // 水平对齐方式，left/center/right
-        verticalAlign: 'middle' // 垂直对齐方式 top/middle/bottom
+        maxHeight : 80, // max waveform bar height
+        minHeight : 1, // min waveform bar height
+        spacing: 1, // space between bars
+        color : '#f00', // string | [string] color or waveform bars
+        shadowBlur : 0, // blur of bars
+        shadowColor : '#f00', 
+        fadeSide : true, // fading tail
+        horizontalAlign : 'center', // left/center/right, only effective in 'waveform'/'lighting'
+        verticalAlign: 'middle' // top/middle/bottom, only effective in 'waveform'/'lighting'
     }
 });
 
-// 调用dance方法开始得瑟吧
 vudio.dance();
 
-// 也可随时停止得瑟
+// pause as you wish
 vudio.pause();
 
-// 中途换个姿势得瑟也是可以的
+// change option reactively.
 vudio.setOption({
     waveform : {
         color : '#06f',
@@ -89,4 +80,4 @@ vudio.setOption({
 });
 ```
 
-在线示例: http://margox.github.io/vudio.js/
+Online Demo: https://alex2wong.github.io/vudio/
