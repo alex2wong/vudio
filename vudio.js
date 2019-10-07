@@ -25,8 +25,6 @@
     var __default_option = {
         effect : 'waveform',
         accuracy : 128,
-        width : 256,
-        height : 100,
         waveform : {
             maxHeight : 80,
             minHeight : 1,
@@ -57,7 +55,7 @@
             maxHeight : 50,
             minHeight : 1,
             spacing : 1,
-            color : '#fb6d6b',
+            color : '#fcc',
             shadowBlur : 2,
             shadowColor : '#caa',
             fadeSide : true,
@@ -70,7 +68,7 @@
         lighting : {
             maxHeight : 160,
             lineWidth: 2,
-            color : '#f00',
+            color : '#fcc',
             shadowBlur : 1,
             shadowColor : '#c20',
             fadeSide : true,
@@ -141,9 +139,8 @@
         __init : function() {
 
             var audioContext = new (window.AudioContext || window.webkitAudioContext || window.mozAudioContext),
-                source = Object.prototype.toString.call(this.audioSrc) !== '[object MediaStream]' ? audioContext.createMediaElementSource(this.audioSrc) : audioContext.createMediaStreamSource(this.audioSrc),
-                dpr = window.devicePixelRatio || 1;
-
+                source = Object.prototype.toString.call(this.audioSrc) !== '[object MediaStream]' 
+                ? audioContext.createMediaElementSource(this.audioSrc) : audioContext.createMediaStreamSource(this.audioSrc);
             this.analyser = audioContext.createAnalyser();
             this.meta.spr = audioContext.sampleRate;
 
@@ -152,19 +149,12 @@
             this.analyser.connect(audioContext.destination);
 
             this.freqByteData = new Uint8Array(this.analyser.frequencyBinCount);
-            this.context2d = this.canvasEle.getContext('2d');
-            this.width = this.option.width;
-            this.height = this.option.height;
-
-            // ready for HD screen
-            this.context2d.canvas.width = this.width * dpr;
-            this.context2d.canvas.height = this.height * dpr;
-            this.context2d.scale(dpr, dpr);
-            this.context2d.globalCompositeOperation = 'lighter';
-
 
             // prepare for coverImage
             this.coverImg.src = this.option.circlewave.coverImg || '';
+            this.context2d = this.canvasEle.getContext('2d');
+
+            this.__resizeCanvas();
 
             // listen click on vudioEle
             this.canvasEle.addEventListener('click', (function(){
@@ -179,6 +169,21 @@
             }).bind(this)
             );
 
+            window.onresize = this.__resizeCanvas.bind(this);
+
+        },
+
+        __resizeCanvas() {
+            var dpr = window.devicePixelRatio || 1;
+            
+            this.width = this.canvasEle.clientWidth;
+            this.height = this.canvasEle.clientHeight;
+
+            // ready for HD screen
+            this.canvasEle.width = this.width * dpr;
+            this.canvasEle.height = this.height * dpr;
+            this.context2d.scale(dpr, dpr);
+            this.context2d.globalCompositeOperation = 'lighter';
         },
 
         __recreateAnalyzer() {
@@ -373,6 +378,11 @@
                     __that.context2d.lineWidth = 4;
                     __that.context2d.fillStyle = 'rgba(200, 200, 200, .2)';
                     __that.context2d.translate(__that.width / 2 - .5, __that.height / 2 - .5);
+                              
+                    if (__circlewaveOption.shadowBlur > 0) {
+                        __that.context2d.shadowBlur = __circlewaveOption.shadowBlur;
+                        __that.context2d.shadowColor = __circlewaveOption.shadowColor;
+                    }
 
                     // generate and render particles if enabled 
                     if (__particle) {
@@ -390,11 +400,6 @@
                             __that.particles.shift();
                         }
                         __that.particles.forEach((dot) => { dot.update(__that.context2d); });
-                    }
-                    
-                    if (__circlewaveOption.shadowBlur > 0) {
-                        __that.context2d.shadowBlur = __circlewaveOption.shadowBlur;
-                        __that.context2d.shadowColor = __circlewaveOption.shadowColor;
                     }
 
                     __that.context2d.beginPath();
@@ -504,6 +509,11 @@
                     __that.context2d.clearRect(0, 0, __that.width, __that.height);
                     __that.context2d.save();
                     __that.context2d.translate(__that.width / 2 - .5, __that.height / 2 - .5);
+                    
+                    if (__circlebarOption.shadowBlur > 0) {
+                        __that.context2d.shadowBlur = __circlebarOption.shadowBlur;
+                        __that.context2d.shadowColor = __circlebarOption.shadowColor;
+                    }
 
                     // generate and render particles if enabled 
                     if (__particle) {
@@ -521,11 +531,6 @@
                             __that.particles.shift();
                         }
                         __that.particles.forEach((dot) => { dot.update(__that.context2d); });
-                    }
-                    
-                    if (__circlebarOption.shadowBlur > 0) {
-                        __that.context2d.shadowBlur = __circlebarOption.shadowBlur;
-                        __that.context2d.shadowColor = __circlebarOption.shadowColor;
                     }
 
                     __that.context2d.beginPath();
@@ -721,7 +726,7 @@
                 __that.context2d.beginPath();
                 __that.context2d.lineWidth = .5;
                 __that.context2d.globalCompositeOperation = 'source-over';
-                __that.context2d.rotate(Math.PI * 2 * __progress/2);
+                __that.context2d.rotate(Math.PI * 2 * __progress * 2);
                 __that.context2d.arc(0, 0, circleRadius - 13, -Math.PI/2, Math.PI * 2 - Math.PI/2 );
                 __that.context2d.stroke();
                 __that.context2d.clip();

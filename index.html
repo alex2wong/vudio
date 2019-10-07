@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Vudio Demo</title>
     <style>
     html,body{
@@ -28,12 +30,10 @@
     }
     #canvas {
         position: absolute;
-        top: 50%;
-        left: 50%;
-        margin-left: -300px;
-        margin-top: -300px;
-        width: 600px;
-        height: 600px;
+        top: 10%;
+        left: 10%;
+        width: 80%;
+        height: 80%;
     }
     #audioFile {
         position: absolute;
@@ -73,9 +73,10 @@
         float: left;
         height: 40px;
         margin: 0 1px;
-        padding: 0 20px;
+        padding: 0 15px;
         color: #fff;
         background-color: rgba(255,255,255,.2);
+        border-radius: 12px;
         border: none;
         outline: none;
     }
@@ -108,7 +109,7 @@
         <input type="file" name="audioFile" id="audioFile" onchange="vudio.readAudioSrc(this,vudio,document.querySelector('#audioLabel'))" accept="audio/*">
     </div>
     <div class="controller">
-        <div>
+        <!-- <div>
             <button onclick="(function(){ audio.play();vudio.dance(); })()">Play</button>
             <button onclick="audio.pause()">Pause</button>
         </div>
@@ -116,7 +117,7 @@
             <button onclick="vudio.dance()">Dance</button>
             <button onclick="vudio.pause()">Stop</button>
             <button onclick="prettifyWaveform()">Beautify</button>
-        </div>
+        </div> -->
         <div>
             <button class="type type-1" onclick="changeType(0)">Wave</button>
             <button class="type type-2" onclick="changeType(1)">Circular</button>
@@ -170,17 +171,13 @@
     var vudio = new Vudio(audio, canvas, {
         effect: 'circlewave',
         accuracy: 128,
-        width: 800,
-        height: 800,
         circlebar: {
-            circleRadius: 200,
             fadeSide: false,
             shadowBlur : 4,
             shadowColor: 'rgba(244,244,244,.5)',
             coverImg: './demo_src/nuanchun.jpg',
         },
         circlewave: {
-            circleRadius: 200,
             fadeSide: true,
             shadowBlur : 4,
             shadowColor: 'rgba(244,244,244,.5)',
