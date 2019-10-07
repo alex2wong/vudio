@@ -1,4 +1,4 @@
-# vudio
+# vudio <img src="https://img.shields.io/npm/v/vudio" /> <img src="https://img.shields.io/npm/l/vudio.svg" alt="license">
 ### Visualization audio using AudioContext and Canvas
 
 Inspired and based on https://github.com/margox/vudio.js.git
@@ -22,7 +22,7 @@ npm i vudio --save
 yarn add vudio
 ```
 ```javascript
-import Vudio from 'vudio.js'
+import Vudio from 'vudio'
 ```
 using CDN:
 ```html
@@ -78,3 +78,16 @@ vudio.setOption({
 ```
 
 Online Demo: https://alex2wong.github.io/vudio/
+
+### Related VSC extension
+
+![vscode extension](https://user-images.githubusercontent.com/10528482/64496866-f1eca780-d2db-11e9-92e5-cc179758d035.gif)
+
+Listen netease music and watch visualization in VSCode :)
+Install by vsix file
+https://github.com/alex2wong/vsc-netease-music/releases
+
+related issue:
+https://github.com/nondanee/vsc-netease-music/issues/63
+
+
