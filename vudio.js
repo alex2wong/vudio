@@ -214,8 +214,8 @@
                 __freqByteData = Array.from(freqByteData).reverse();
             } else {
                 __freqByteData = [].concat(
-                    Array.from(freqByteData).reverse().splice(this.option.accuracy / 2, this.option.accuracy / 2),
-                    Array.from(freqByteData).splice(0, this.option.accuracy / 2)
+                    Array.from(freqByteData).reverse().slice(this.option.accuracy / 2, this.option.accuracy),
+                    Array.from(freqByteData).slice(0, this.option.accuracy / 2)
                 );
             }
 
@@ -241,7 +241,6 @@
         },
 
         __animate : function() {
-
             if (this.stat === 1) {
                 this.analyser.getByteFrequencyData(this.freqByteData);
                 (typeof this.__effects()[this.option.effect] === 'function') && this.__effects()[this.option.effect](this.freqByteData);
@@ -499,6 +498,7 @@
                     var __maxParticle = __circlebarOption.maxParticle;
                     var __showProgress = __circlebarOption.showProgress;
                     var __progress = __that.audioSrc.currentTime / __that.audioSrc.duration;
+                    var __offsetX = 0;
 
                     if (__circlebarOption.horizontalAlign !== 'center') {
                         __fadeSide = false;
@@ -533,19 +533,29 @@
                         __that.particles.forEach((dot) => { dot.update(__that.context2d); });
                     }
 
+                    __width = (circleRadius * Math.PI - __that.option.accuracy * __circlebarOption.spacing) / __that.option.accuracy;
+                    __offsetX = -__width / 2;
+                    __color = __circlebarOption.color;
+                    // since circlebar use ctx.rotate for each bar, so do NOT support gradient in bar currently.
+                    var renderStyle = __color instanceof Array ? __color[0] : __color;
+                    __that.context2d.fillStyle = renderStyle
+                    // style for progress bar
+                    __that.context2d.strokeStyle = renderStyle;
+                    __that.context2d.lineWidth = 4;
+                    __that.context2d.lineCap = 'round';
+                    __that.context2d.shadowBlur = 8;
+
+                    __that.context2d.globalAlpha = 1;
                     __that.context2d.beginPath();
 
                     // draw circlebar
                     // console.warn('__freqBytesData: ', __freqByteData, ' first entry height: ', __freqByteData[1] / 256 * __circlebarOption.maxHeight);
-                    __freqByteData.forEach(function(value, index){
-
-                        __width = (circleRadius * Math.PI - __that.option.accuracy * __circlebarOption.spacing) / __that.option.accuracy;
+                    for (var index = __freqByteData.length - 1; index >= 0; index--) {
+                        var value = __freqByteData[index];
                         __left = index * (__width + __circlebarOption.spacing);
-                        // need angle to rotate canvas for each bar.
-
                         __circlebarOption.spacing !== 1 && (__left += __circlebarOption.spacing / 2);
                         
-                        if (__prettify) {
+                        if (false) {
                             if (index <= __that.option.accuracy / 2) {
                                 __maxHeight = (1 - (__that.option.accuracy / 2 - 1 - index) / ( __that.option.accuracy / 2)) * __circlebarOption.maxHeight;
                             } else {
@@ -558,39 +568,20 @@
                         __height = value / 256 * __maxHeight;
                         __height = __height < __circlebarOption.minHeight ? __circlebarOption.minHeight : __height;
 
-                        if (__circlebarOption.verticalAlign === 'middle') {
-                            __top = (__that.height - __height) / 2;
-                        } else if (__circlebarOption.verticalAlign === 'top') {
-                            __top = 0;
-                        } else if (__circlebarOption.verticalAlign === 'bottom') {
-                            __top = __that.height - __height;
-                        } else {
-                            __top = (__that.height - __height) / 2;
-                        }
-
-                        __color = __circlebarOption.color;
-                        // since circlebar use ctx.rotate for each bar, so do NOT support gradient in bar currently.
-                        __that.context2d.fillStyle = __color instanceof Array ? __color[0] : __color;
-
                         if (__fadeSide) {
                             if (index <= __that.option.accuracy / 2) {
                                 __that.context2d.globalAlpha = 1 - (__that.option.accuracy / 2 - 1 - index) / ( __that.option.accuracy / 2);
                             } else {
                                 __that.context2d.globalAlpha = 1 - (index - __that.option.accuracy / 2) / ( __that.option.accuracy / 2);
                             }
-                        } else {
-                           __that.context2d.globalAlpha = 1;
                         }
 
-                        __that.context2d.save();
-                        __that.context2d.rotate(__angle * index);
-                        __that.context2d.fillRect(-__width / 2, circleRadius, __width, __height);
-                        __that.context2d.restore();
+                        __that.context2d.rotate(__angle);
+                        __that.context2d.fillRect(__offsetX, circleRadius, __width, __height);
                         __that.context2d.fill();
+                    }
 
-                    });
-
-                    if (__showProgress) { __that.drawProgress(__that.context2d.fillStyle, __progress, circleRadius); }
+                    if (__showProgress) { __that.drawProgress(null, __progress, circleRadius); }
                     __that.drawCover(__progress, circleRadius);
                     
                     // need to restore canvas after translate to center..
@@ -744,10 +735,12 @@
             // draw progress circular.
             var __that = this;
             __that.context2d.beginPath();
-            __that.context2d.strokeStyle = __color;
-            __that.context2d.lineWidth = 4;
-            __that.context2d.lineCap = 'round';
-            __that.context2d.shadowBlur = 8;
+            if (__color) {
+                __that.context2d.strokeStyle = __color;
+                __that.context2d.lineWidth = 4;
+                __that.context2d.lineCap = 'round';
+                __that.context2d.shadowBlur = 8;
+            }
             __that.context2d.arc(0, 0, circleRadius - 10, -Math.PI/2, Math.PI * 2 * __progress - Math.PI/2 );     
             __that.context2d.stroke();
         }

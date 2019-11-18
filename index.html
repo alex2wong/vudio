@@ -30,10 +30,10 @@
     }
     #canvas {
         position: absolute;
-        top: 10%;
+        top: 20%;
         left: 10%;
         width: 80%;
-        height: 80%;
+        height: 60%;
     }
     #audioFile {
         position: absolute;
@@ -172,7 +172,9 @@
         effect: 'circlewave',
         accuracy: 128,
         circlebar: {
-            fadeSide: false,
+            maxHeight : 40,
+            fadeSide: true,
+            particle: false,
             shadowBlur : 4,
             shadowColor: 'rgba(244,244,244,.5)',
             coverImg: './demo_src/nuanchun.jpg',
