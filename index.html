@@ -12,7 +12,8 @@
         margin: 0;
         padding: 0;
         overflow: hidden;
-        background-color: #31002d;
+        background: radial-gradient(#305670, #010609);
+        transition: all 1.5s ease;
     }
     .container{
         position: relative;
@@ -23,7 +24,7 @@
         position: absolute;
         width: 100%;
         height: 100%;
-        background-image: url('./demo_src/cover.jpg');
+        /* background-image: url('./demo_src/cover.jpg'); */
         background-size: cover;
         background-position: center;
         filter: blur(50px);
@@ -200,6 +201,15 @@
                 [0.7, '#ff0'],
                 [1, '#ff0']
             ]
+        },
+        lighting: {
+            lineWidth: 1,
+            dottify: true,
+            fadeSide: true,
+            prettify: false,
+            color : '#49f3f7',
+            shadowBlur : 2,
+            shadowColor: 'rgba(244,244,244,.5)',
         }
     });
     vudio.dance();

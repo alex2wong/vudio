@@ -67,6 +67,7 @@
         },
         lighting : {
             maxHeight : 160,
+            maxSize: 8,
             lineWidth: 2,
             color : '#fcc',
             shadowBlur : 1,
@@ -153,6 +154,8 @@
             // prepare for coverImage
             this.coverImg.src = this.option.circlewave.coverImg || '';
             this.context2d = this.canvasEle.getContext('2d');
+
+            this.effects = this.__effects();
 
             this.__resizeCanvas();
 
@@ -243,7 +246,7 @@
         __animate : function() {
             if (this.stat === 1) {
                 this.analyser.getByteFrequencyData(this.freqByteData);
-                (typeof this.__effects()[this.option.effect] === 'function') && this.__effects()[this.option.effect](this.freqByteData);
+                (typeof this.effects[this.option.effect] === 'function') && this.effects[this.option.effect](this.freqByteData);
                 requestAnimationFrame(this.__animate.bind(this));
             }
 
@@ -258,6 +261,7 @@
         __effects : function() {
 
             var __that = this;
+            var __dotOpacity = [], __dotSize = [];
 
             return {
 
@@ -267,6 +271,8 @@
                     var __freqByteData = __that.__rebuildData(freqByteData, __lightingOption.horizontalAlign);
                     var __maxHeight = __lightingOption.maxHeight;
                     var __prettify = __lightingOption.prettify;
+                    var __dottify = __lightingOption.dottify;
+                    var __maxSize = __lightingOption.maxSize;
                     var __color = __lightingOption.color;
                     var __isStart = true, __fadeSide = true, __x, __y, __linearGradient;
 
@@ -325,6 +331,16 @@
                             __maxHeight = __lightingOption.maxHeight;
                         }
 
+                        if (__fadeSide) {
+                            if (index <= __that.option.accuracy / 2) {
+                                __that.context2d.globalAlpha = 1 - (__that.option.accuracy / 2 - 1 - index) / ( __that.option.accuracy / 2);
+                            } else {
+                                __that.context2d.globalAlpha = 1 - (index - __that.option.accuracy / 2) / ( __that.option.accuracy / 2);
+                            }
+                        } else {
+                           __that.context2d.globalAlpha = 1;
+                        }
+
                         __x = __that.width / __that.option.accuracy * index;
                         var __tmpY = value / 256 * __maxHeight;
 
@@ -338,17 +354,36 @@
                             __y = (__that.height - __tmpY) / 2;
                         }
 
-                        if (__isStart) {
-                            __that.context2d.moveTo(__x, __y);
-                            __isStart = false;
-                        } else {
-                            __that.context2d.lineTo(__x, __y);
+                        if (__dottify && index !== 0 && index % 2 === 0) {
+                            __that.context2d.beginPath();
+                            __dotSize[index] = __dotSize[index] !== undefined ? __dotSize[index] : Math.random() * __maxSize + 1;
+                            // __dotOpacity[index] = __dotOpacity[index] !== undefined ? __dotOpacity[index] : Math.random();
+                            __that.context2d.arc(__x, __y, __dotSize[index], 0, Math.PI * 2);
+                            
+                            // // make some noise under this x coord
+                            // if (__lightingOption.verticalAlign !== 'top') {
+                            //     while(__y < (__that.height / 2 - 10)) {
+                            //         __y += Math.random() * 2 + 10;
+                            //         __that.context2d.arc(__x, __y, __dotSize[index], 0, Math.PI * 2);
+                            //     }
+                            // }
+
+                            __that.context2d.fill();
+                        } else if (!__dottify) {
+                            if (__isStart) {
+                                __that.context2d.moveTo(__x, __y);
+                                __isStart = false;
+                            } else {
+                                __that.context2d.lineTo(__x, __y);
+                            }
                         }
 
                     });
-                    __that.context2d.stroke();
-                    __that.context2d.globalAlpha = .6;
-                    __that.context2d.fill();
+                    if (!__dottify) {
+                        __that.context2d.stroke();
+                        __that.context2d.globalAlpha = .6;
+                        __that.context2d.fill();
+                    }
                 },
 
                 circlewave: function(freqByteData) {
