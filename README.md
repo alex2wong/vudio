@@ -7,7 +7,7 @@ Inspired and based on https://github.com/margox/vudio.js.git
 
 Many visual effect:
 
-![多種視覺效果](https://github.com/alex2wong/vudio.js/blob/master/demo_src/snapshot.jpg?raw=true)
+![多種視覺效果](https://github.com/alex2wong/vudio/blob/master/demo_src/snapshot.jpg?raw=true)
 
 ------
 #### Features：
