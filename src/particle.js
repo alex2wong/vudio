@@ -11,6 +11,7 @@ function Particle(opt) {
     this.alpha = 1;
     this.rotate = 0;
     this.color = opt.color || 'rgba(244,244,244,.9)';
+    this.type = opt.type || 'circle';
 
     this.update = update;
     this.render = render;
@@ -23,7 +24,7 @@ function update(ctx) {
 
     this.life -= .01;
     this.alpha -= .003;
-    this.rotate += Math.random() * .02 - .01;
+    this.rotate += Math.random() * .01;
     if (this.life < 0) {
         this.dead = true;
         this.alpha = 0;
@@ -33,15 +34,22 @@ function update(ctx) {
 }
 
 function render(ctx) {
-    var dot = this, gA;
+    var dot = this, gA = ctx.globalAlpha;
     // ctx.shadowBlur = dot.size / 2;
     // ctx.shadowColor = 'rgba(244,244,244,.2)';
-    // ctx.strokeStyle = dot.color;
     ctx.fillStyle = dot.color;
-    ctx.beginPath();
-    gA = ctx.globalAlpha;
-    ctx.globalAlpha = dot.alpha;
-    ctx.arc(dot.x, dot.y, dot.size, 0, Math.PI * 2);
-    ctx.fill();
+    if (dot.type === 'circle') {
+        ctx.beginPath();
+        ctx.globalAlpha = dot.alpha;
+        ctx.arc(dot.x, dot.y, dot.size, 0, Math.PI * 2);
+        ctx.fill();
+    } else {
+        ctx.save();
+        ctx.translate(dot.x, dot.y);
+        ctx.rotate(dot.rotate);
+        ctx.rect(0, 0, dot.size, dot.size);
+        ctx.restore();
+        ctx.fill();
+    }
     ctx.globalAlpha = gA;
 }

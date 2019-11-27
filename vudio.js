@@ -155,6 +155,9 @@
             this.coverImg.src = this.option.circlewave.coverImg || '';
             this.context2d = this.canvasEle.getContext('2d');
 
+            var memCanv = document.createElement('canvas');
+            this.memCtx = memCanv.getContext('2d');
+
             this.effects = this.__effects();
 
             this.__resizeCanvas();
@@ -187,6 +190,11 @@
             this.canvasEle.height = this.height * dpr;
             this.context2d.scale(dpr, dpr);
             this.context2d.globalCompositeOperation = 'lighter';
+
+            // resize memCanvas also.
+            this.memCtx.canvas.width = this.width * dpr;
+            this.memCtx.canvas.height = this.height * dpr;
+            this.memCtx.scale(dpr, dpr);
         },
 
         __recreateAnalyzer() {
@@ -257,6 +265,32 @@
             (typeof this.__effects()[this.option.effect] === 'function') && this.__effects()[this.option.effect](this.freqByteData);
         },
 
+        /**
+         * render blured background particles
+         */
+        __renderMemParticles: function(strokStyle, fillStyle, type) {
+            // // generate and render particles if enabled 
+            if (1) {
+                // should clean dead particle before render, remove the first particle if full.
+                delete this.particles.find(function(p){ return p.dead });
+                if (this.particles.length > 50) {
+                    this.particles.shift();
+                } else {
+                    this.particles.push(new Particle({
+                        x: Math.random() * this.width,
+                        y : Math.random() * 100 - 50 + this.height / 2,
+                        vx: Math.random()*.2 - .3,
+                        vy: Math.random()*.3 - .4,
+                        size: Math.random() * 5,
+                        life: Math.random() * 50,
+                        type: type,
+                        color: fillStyle,
+                    }));
+                }
+                this.particles.forEach((dot) => { dot.update(this.context2d); });
+            }
+        },
+
         // effect functions
         __effects : function() {
 
@@ -290,6 +324,11 @@
                     __that.context2d.globalAlpha = .8;
                     __that.context2d.beginPath();
 
+                    // render particles with blur effect
+                    __that.context2d.shadowBlur = 4;
+                    __that.context2d.shadowColor = __that.context2d.fillStyle;
+                    __that.__renderMemParticles(null, __that.context2d.shadowColor, 'rect');
+
                     if (__color instanceof Array) {
 
                         __linearGradient = __that.context2d.createLinearGradient(
@@ -317,7 +356,7 @@
                         __that.context2d.fillStyle = __color;
                         __that.context2d.strokeStyle = __color;
                     }
-
+                    
                     __freqByteData.forEach(function(value, index) {
 
                         if (__prettify) {
@@ -420,19 +459,21 @@
 
                     // generate and render particles if enabled 
                     if (__particle) {
-                        const deg = Math.random() * Math.PI * 2;
-                        __that.particles.push(new Particle({
-                            x: (circleRadius + 20) * Math.sin(deg),
-                            y : (circleRadius + 20) * Math.cos(deg),
-                            vx: .3 * Math.sin(deg) + Math.random()*.5 - .3,
-                            vy: .3 * Math.cos(deg) + Math.random()*.5 - .3,
-                            life: Math.random() * 10,
-                            // color: __circlewaveOption.color
-                        }));
                         // should clean dead particle before render.
+                        delete __that.particles.find(function(p){return p.dead});
                         if (__that.particles.length > __maxParticle) {
-                            __that.particles.shift();
+                            // __that.particles.shift();
+                        } else {
+                            const deg = Math.random() * Math.PI * 2;
+                            __that.particles.push(new Particle({
+                                x: (circleRadius + 30) * Math.sin(deg),
+                                y : (circleRadius + 30) * Math.cos(deg),
+                                vx: .3 * Math.sin(deg) + Math.random()*.5 - .3,
+                                vy: .3 * Math.cos(deg) + Math.random()*.5 - .3,
+                                life: Math.random() * 10,
+                            }));
                         }
+  
                         __that.particles.forEach((dot) => { dot.update(__that.context2d); });
                     }
 
@@ -552,18 +593,19 @@
 
                     // generate and render particles if enabled 
                     if (__particle) {
-                        const deg = Math.random() * Math.PI * 2;
-                        __that.particles.push(new Particle({
-                            x: (circleRadius + 20) * Math.sin(deg),
-                            y : (circleRadius + 20) * Math.cos(deg),
-                            vx: .3 * Math.sin(deg) + Math.random()*.5 - .3,
-                            vy: .3 * Math.cos(deg) + Math.random()*.5 - .3,
-                            life: Math.random() * 10,
-                            // color: __circlebarOption.color
-                        }));
-                        // should clean dead particle before render.
+                        delete __that.particles.find(function(p){return p.dead});
                         if (__that.particles.length > __maxParticle) {
-                            __that.particles.shift();
+                            // __that.particles.shift();
+                        } else {
+                            const deg = Math.random() * Math.PI * 2;
+                            __that.particles.push(new Particle({
+                                x: (circleRadius + 20) * Math.sin(deg),
+                                y : (circleRadius + 20) * Math.cos(deg),
+                                vx: .3 * Math.sin(deg) + Math.random()*.5 - .3,
+                                vy: .3 * Math.cos(deg) + Math.random()*.5 - .3,
+                                life: Math.random() * 10,
+                                // type: 'rect'
+                            }));
                         }
                         __that.particles.forEach((dot) => { dot.update(__that.context2d); });
                     }
