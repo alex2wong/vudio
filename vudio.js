@@ -462,7 +462,7 @@
                         // should clean dead particle before render.
                         delete __that.particles.find(function(p){return p.dead});
                         if (__that.particles.length > __maxParticle) {
-                            // __that.particles.shift();
+                            __that.particles.shift();
                         } else {
                             const deg = Math.random() * Math.PI * 2;
                             __that.particles.push(new Particle({
@@ -595,7 +595,7 @@
                     if (__particle) {
                         delete __that.particles.find(function(p){return p.dead});
                         if (__that.particles.length > __maxParticle) {
-                            // __that.particles.shift();
+                            __that.particles.shift();
                         } else {
                             const deg = Math.random() * Math.PI * 2;
                             __that.particles.push(new Particle({

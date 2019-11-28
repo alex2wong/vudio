@@ -3,8 +3,6 @@
 
 Inspired and based on https://github.com/margox/vudio.js.git
 
-![](https://upload-images.jianshu.io/upload_images/1950967-1eb6e07d93883fbb.gif?imageMogr2/auto-orient/strip)
-
 Many visual effect:
 
 ![多種視覺效果](https://github.com/alex2wong/vudio/blob/master/demo_src/snapshot.jpg?raw=true)
