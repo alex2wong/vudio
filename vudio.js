@@ -555,8 +555,8 @@
                     __that.context2d.fill();
                     __that.context2d.globalAlpha = globalAlpha;
 
-                    if (__showProgress) { __that.drawProgress(__color, __progress, circleRadius); }
                     __that.drawCover(__progress, circleRadius);
+                    if (__showProgress) { __that.drawProgress(__color, __progress, circleRadius); }
 
                     // need to restore canvas after translate to center..
                     __that.context2d.restore();
@@ -616,11 +616,6 @@
                     // since circlebar use ctx.rotate for each bar, so do NOT support gradient in bar currently.
                     var renderStyle = __color instanceof Array ? __color[0] : __color;
                     __that.context2d.fillStyle = renderStyle
-                    // style for progress bar
-                    __that.context2d.strokeStyle = renderStyle;
-                    __that.context2d.lineWidth = 4;
-                    __that.context2d.lineCap = 'round';
-                    __that.context2d.shadowBlur = 8;
 
                     __that.context2d.globalAlpha = 1;
                     __that.context2d.beginPath();
@@ -658,8 +653,8 @@
                         __that.context2d.fill();
                     }
 
-                    if (__showProgress) { __that.drawProgress(null, __progress, circleRadius); }
                     __that.drawCover(__progress, circleRadius);
+                    if (__showProgress) { __that.drawProgress(renderStyle, __progress, circleRadius); }
                     
                     // need to restore canvas after translate to center..
                     __that.context2d.restore();
@@ -791,13 +786,16 @@
             if (__that.coverImg.width !== 0) {
                 var img = __that.coverImg;
                 __that.context2d.save();
-                __that.context2d.beginPath();
                 __that.context2d.lineWidth = .5;
+                __that.context2d.shadowColor = 0;
+
                 __that.context2d.globalCompositeOperation = 'source-over';
-                __that.context2d.rotate(Math.PI * 2 * __progress * 2);
-                __that.context2d.arc(0, 0, circleRadius - 13, -Math.PI/2, Math.PI * 2 - Math.PI/2 );
-                __that.context2d.stroke();
+                __that.context2d.beginPath();
+
+                __that.context2d.arc(0, 0, circleRadius - 13, -Math.PI/2, Math.PI * 2);
                 __that.context2d.clip();
+                __that.context2d.rotate(Math.PI * 2 * __progress * 2);
+
                 if (img.width/img.height > 1) {
                     var croppedImgWidth = circleRadius*2*(img.width-img.height)/(img.height);
                     __that.context2d.drawImage(img, -circleRadius-10-croppedImgWidth/2, -circleRadius-10,circleRadius*2*img.width/img.height,circleRadius*2);
@@ -816,7 +814,6 @@
                 __that.context2d.strokeStyle = __color;
                 __that.context2d.lineWidth = 4;
                 __that.context2d.lineCap = 'round';
-                __that.context2d.shadowBlur = 8;
             }
             __that.context2d.arc(0, 0, circleRadius - 10, -Math.PI/2, Math.PI * 2 * __progress - Math.PI/2 );     
             __that.context2d.stroke();
