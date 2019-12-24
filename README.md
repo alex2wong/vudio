@@ -1,9 +1,7 @@
 # vudio <img src="https://img.shields.io/npm/v/vudio" /> <img src="https://img.shields.io/npm/l/vudio.svg" alt="license">
 ### Visualization audio using AudioContext and Canvas
 
-Inspired and based on https://github.com/margox/vudio.js.git
-
-Many visual effect:
+Many visual effects:
 
 ![多種視覺效果](https://github.com/alex2wong/vudio/blob/master/demo_src/snapshot.jpg?raw=true)
 
@@ -24,7 +22,7 @@ import Vudio from 'vudio'
 ```
 using CDN:
 ```html
-<script src="https://unpkg.com/vudio@2.0.5/umd/vudio.js"></script>
+<script src="https://unpkg.com/vudio@2.1.1/umd/vudio.js"></script>
 ```
 Use Vudio
 ```javascript
@@ -88,4 +86,6 @@ https://github.com/alex2wong/vsc-netease-music/releases
 related issue:
 https://github.com/nondanee/vsc-netease-music/issues/63
 
+### Acknowledge
 
+Inspired and based on https://github.com/margox/vudio.js.git
