@@ -1,6 +1,6 @@
 {
   "name": "vudio",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "visualization audio using AudioContext and Canvas",
   "browser": "umd/vudio.js",
   "files": [
