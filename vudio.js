@@ -162,8 +162,7 @@
 
             this.__resizeCanvas();
 
-            // listen click on vudioEle
-            this.canvasEle.addEventListener('click', (function(){
+            var playControl = (function(){
                 if (this.stat === 0) {
                     this.audioSrc.play();
                     this.dance();
@@ -173,7 +172,30 @@
                     this.audioSrc.pause();
                 }
             }).bind(this)
-            );
+
+            // listen click on vudioEle
+            this.canvasEle.addEventListener('click', playControl);
+
+            this.canvasEle.addEventListener('mousedown', (function(evt){
+                evt.target.style.cursor = 'grab';
+                this.startDragPoint = evt.clientX;
+                // evt.target.addEventListener('mousemove', handleDragProgress);
+            }).bind(this));
+
+            this.canvasEle.addEventListener('mouseup', (function(evt){
+                evt.target.style.cursor = 'default';
+                var deltaPercent = (evt.clientX - this.startDragPoint) / evt.target.width;
+                if (Math.abs(deltaPercent) < 0.02) return;
+                var targetTime = this.audioSrc.currentTime + deltaPercent * this.audioSrc.duration;
+                if (targetTime < 0) {
+                    this.audioSrc.currentTime = 0;
+                } else if (targetTime > this.audioSrc.duration) {
+                    this.audioSrc.currentTime = this.audioSrc.duration;;
+                } else {
+                    this.audioSrc.currentTime += deltaPercent * this.audioSrc.duration;
+                }
+                setTimeout(playControl, 0);
+            }).bind(this));
 
             window.onresize = this.__resizeCanvas.bind(this);
 
@@ -423,6 +445,7 @@
                         __that.context2d.globalAlpha = .6;
                         __that.context2d.fill();
                     }
+                    __that.drawBarProgress(__color, __that.audioSrc.currentTime / __that.audioSrc.duration);
                 },
 
                 circlewave: function(freqByteData) {
@@ -755,6 +778,7 @@
 
                     });
 
+                    __that.drawBarProgress(__color, __that.audioSrc.currentTime / __that.audioSrc.duration);
                 }
 
             }
@@ -816,6 +840,26 @@
                 __that.context2d.lineCap = 'round';
             }
             __that.context2d.arc(0, 0, circleRadius - 10, -Math.PI/2, Math.PI * 2 * __progress - Math.PI/2 );     
+            __that.context2d.stroke();
+        },
+
+        drawBarProgress: function(__color='#eee', __progress) {
+            var __that = this;
+            var canv = __that.context2d.canvas;
+            var lineY = canv.height * .7;
+            var lineX = 5 +__progress * canv.width * .7;
+            __that.context2d.beginPath();
+            if (__color) {
+                __that.context2d.globalAlpha = .3;
+                __that.context2d.strokeStyle = '#eee';
+                __that.context2d.shadowBlur = 4;
+                __that.context2d.shadowColor = '#eee';
+                __that.context2d.lineWidth = 2;
+                __that.context2d.lineCap = 'round';
+            }
+            __that.context2d.moveTo(5, lineY);
+            __that.context2d.lineTo(lineX, lineY);
+            __that.context2d.arc(lineX, lineY, 2, 0, Math.PI * 2);
             __that.context2d.stroke();
         }
 
