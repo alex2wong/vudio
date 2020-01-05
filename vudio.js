@@ -173,37 +173,57 @@
                 }
             }).bind(this)
 
-            // listen click on vudioEle
-            this.canvasEle.addEventListener('click', playControl);
-
-            this.canvasEle.addEventListener('mousedown', (function(evt){
-                evt.target.style.cursor = 'grab';
-                this.startDragPoint = evt.clientX;
-                // evt.target.addEventListener('mousemove', handleDragProgress);
-            }).bind(this));
-
-            this.canvasEle.addEventListener('mouseup', (function(evt){
+            var handleDragProgress = (function(evt){
+                var deltaPercent;
                 evt.target.style.cursor = 'default';
-                var deltaPercent = (evt.clientX - this.startDragPoint) / evt.target.width;
-                if (Math.abs(deltaPercent) < 0.02) return;
+                evt.preventDefault();
+                if (this.audioSrc.duration === undefined) {
+                    return;
+                }
+                if (evt.changedTouches && evt.changedTouches.length > 0) {
+                    deltaPercent = (evt.changedTouches[0].clientX - this.startDragPoint) / evt.target.width;
+                } else {
+                    deltaPercent = (evt.clientX - this.startDragPoint) / evt.target.width;
+                }
+                if (Math.abs(deltaPercent) < 0.02) {
+                    setTimeout(playControl, 0);
+                    return;
+                }
                 var targetTime = this.audioSrc.currentTime + deltaPercent * this.audioSrc.duration;
                 if (targetTime < 0) {
                     this.audioSrc.currentTime = 0;
                 } else if (targetTime > this.audioSrc.duration) {
                     this.audioSrc.currentTime = this.audioSrc.duration;;
-                } else {
+                } else if (!isNaN(deltaPercent)) {
                     this.audioSrc.currentTime += deltaPercent * this.audioSrc.duration;
                 }
-                setTimeout(playControl, 0);
-            }).bind(this));
+            }).bind(this);
+
+            var handleDragStart = (function(evt){
+                evt.target.style.cursor = 'grab';
+                evt.preventDefault();
+                if (evt.changedTouches && evt.changedTouches.length > 0) {
+                    this.startDragPoint = evt.changedTouches[0].clientX;
+                } else {
+                    this.startDragPoint = evt.clientX;
+                }
+                // evt.target.addEventListener('mousemove', handleDragProgress);
+            }).bind(this);
+
+            this.canvasEle.addEventListener('mousedown', handleDragStart);
+            this.canvasEle.addEventListener('mouseup', handleDragProgress);
+
+            this.canvasEle.addEventListener("touchstart", handleDragStart);
+            this.canvasEle.addEventListener("touchend", handleDragProgress);
 
             window.onresize = this.__resizeCanvas.bind(this);
 
         },
 
         __resizeCanvas() {
-            var dpr = window.devicePixelRatio || 1;
-            
+            // var dpr = window.devicePixelRatio || 1;
+            var dpr = 1;
+
             this.width = this.canvasEle.clientWidth;
             this.height = this.canvasEle.clientHeight;
 
@@ -847,7 +867,7 @@
             var __that = this;
             var canv = __that.context2d.canvas;
             var lineY = canv.height * .7;
-            var lineX = 5 +__progress * canv.width * .7;
+            var lineX = 5 + __progress * (canv.width - 8);
             __that.context2d.beginPath();
             if (__color) {
                 __that.context2d.globalAlpha = .3;
