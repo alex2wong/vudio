@@ -1,0 +1,92 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="oscilloscope" style="width:100%;height:100%"></canvas>
+    <audio id="audio" autoplay src="demo_src/nuanchun.mp3"></audio>
+    <script>
+        var audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+        var audioElement = document.querySelector('audio');
+        var analyser = audioCtx.createAnalyser();
+
+        var sourceNode = audioCtx.createMediaElementSource(audioElement);
+        sourceNode.connect(analyser);
+        analyser.connect(audioCtx.destination);
+
+        analyser.fftSize = 2048;
+        var bufferLength = analyser.frequencyBinCount;
+        var dataArray = new Uint8Array(bufferLength);
+        var amplitude = new Uint8Array(bufferLength);
+        analyser.getByteTimeDomainData(dataArray);
+
+        // Get a canvas defined with ID "oscilloscope"
+        var canvas = document.getElementById("oscilloscope");
+        var canvasCtx = canvas.getContext("2d");
+        var time = 0.0;
+        var offset = 0;
+
+        // draw an oscilloscope of the current audio source
+
+        function draw() {
+            var curTime = audioCtx.currentTime.toFixed(1);
+            var amplitudeCur = 0;
+            
+            requestAnimationFrame(draw);
+
+            analyser.getByteTimeDomainData(dataArray);
+            analyser.getByteFrequencyData(amplitude);
+
+            canvasCtx.fillStyle = "#fac122";
+            canvasCtx.fillRect(0, canvas.height*.2, canvas.width, canvas.height*.8);
+
+            canvasCtx.lineWidth = 2;
+            canvasCtx.strokeStyle = "#fff";
+
+            canvasCtx.beginPath();
+
+            var sliceWidth = canvas.width * 1.0 / bufferLength;
+            var x = 0;
+
+            for (var i = 0; i < bufferLength; i++) {
+
+                var v = dataArray[i] / 256.0;
+                var y = v * canvas.height / 2 + 80;
+
+                if (i === 0) {
+                canvasCtx.moveTo(x, y);
+                } else {
+                canvasCtx.lineTo(x, y);
+                }
+
+                x += sliceWidth;
+            }
+
+            canvasCtx.lineTo(canvas.width, canvas.height / 2);
+            canvasCtx.stroke();
+
+            if ((curTime - time) <= .01) {
+                if (time > canvas.width && time % canvas.width <= 0.1) {
+                    console.warn(time % canvas.width);
+                    canvasCtx.fillStyle = "#fff";
+                    canvasCtx.fillRect(0, 0, canvas.width, canvas.height*.2);
+                    offset += canvas.width;
+                }
+                time += .1;
+                amplitudeCur = amplitude.reduce(function(pre, cur) { return pre + cur; }, 0)/bufferLength;
+    
+                canvasCtx.fillStyle = "#fac122";
+                canvasCtx.beginPath();
+                var marginTop = canvas.height *.2* (1-(amplitudeCur/128));
+                canvasCtx.fillRect((time - offset) * 1, marginTop, 1, canvas.height *.2* - marginTop);
+                canvasCtx.fill();
+            }
+        }
+
+        draw();    
+    </script>
+</body>
+</html>
