@@ -4,78 +4,78 @@
  * @version 2.1.1
  */
 
-(function(factory){
+(function (factory) {
 
     /*
      * Support UDM
      */
 
     if (typeof exports === 'object') {
-         module.exports = factory();
+        module.exports = factory();
     } else if (typeof define === 'function' && define.amd) {
-         define(factory);
+        define(factory);
     } else {
-         window.Vudio = factory();
+        window.Vudio = factory();
     }
 
- })(function() {
+})(function () {
 
     'use strict';
 
     var __default_option = {
-        effect : 'waveform',
-        accuracy : 128,
-        waveform : {
-            maxHeight : 80,
-            minHeight : 1,
-            spacing : 1,
-            color : '#f00',
-            shadowBlur : 0,
-            shadowColor : '#f00',
-            fadeSide : true,
-            horizontalAlign : 'center',
-            verticalAlign : 'middle',
-            prettify : true
+        effect: 'waveform',
+        accuracy: 128,
+        waveform: {
+            maxHeight: 80,
+            minHeight: 1,
+            spacing: 1,
+            color: '#f00',
+            shadowBlur: 0,
+            shadowColor: '#f00',
+            fadeSide: true,
+            horizontalAlign: 'center',
+            verticalAlign: 'middle',
+            prettify: true
         },
-        circlewave : {
-            maxHeight : 20,
-            minHeight : -5,
-            spacing : 1,
-            color : '#fcc',
-            shadowBlur : 2,
-            shadowColor : '#caa',
-            fadeSide : true,
-            prettify : false,
+        circlewave: {
+            maxHeight: 20,
+            minHeight: -5,
+            spacing: 1,
+            color: '#fcc',
+            shadowBlur: 2,
+            shadowColor: '#caa',
+            fadeSide: true,
+            prettify: false,
             particle: true,
             maxParticle: 100,
             circleRadius: 128,
             showProgress: true,
         },
         circlebar: {
-            maxHeight : 50,
-            minHeight : 1,
-            spacing : 1,
-            color : '#fcc',
-            shadowBlur : 2,
-            shadowColor : '#caa',
-            fadeSide : true,
-            prettify : false,
+            maxHeight: 50,
+            minHeight: 1,
+            spacing: 1,
+            color: '#fcc',
+            shadowBlur: 2,
+            shadowColor: '#caa',
+            fadeSide: true,
+            prettify: false,
             particle: true,
             maxParticle: 100,
             circleRadius: 128,
             showProgress: true,
         },
-        lighting : {
-            maxHeight : 160,
+        lighting: {
+            maxHeight: 160,
             maxSize: 8,
             lineWidth: 2,
-            color : '#fcc',
-            shadowBlur : 1,
-            shadowColor : '#c20',
-            fadeSide : true,
+            color: '#fcc',
+            shadowBlur: 1,
+            shadowColor: '#c20',
+            fadeSide: true,
             prettify: true,
-            horizontalAlign : 'center',
-            verticalAlign : 'middle'
+            horizontalAlign: 'center',
+            verticalAlign: 'middle'
         }
     }
 
@@ -114,7 +114,7 @@
 
         var __result = {}
 
-        Array.prototype.forEach.call(arguments, function(argument) {
+        Array.prototype.forEach.call(arguments, function (argument) {
 
             var __prop;
             var __value;
@@ -137,11 +137,11 @@
 
     Vudio.prototype = {
 
-        __init : function() {
+        __init: function () {
 
             var audioContext = new (window.AudioContext || window.webkitAudioContext || window.mozAudioContext),
-                source = Object.prototype.toString.call(this.audioSrc) !== '[object MediaStream]' 
-                ? audioContext.createMediaElementSource(this.audioSrc) : audioContext.createMediaStreamSource(this.audioSrc);
+                source = Object.prototype.toString.call(this.audioSrc) !== '[object MediaStream]'
+                    ? audioContext.createMediaElementSource(this.audioSrc) : audioContext.createMediaStreamSource(this.audioSrc);
             this.analyser = audioContext.createAnalyser();
             this.meta.spr = audioContext.sampleRate;
 
@@ -162,7 +162,7 @@
 
             this.__resizeCanvas();
 
-            var playControl = (function(){
+            var playControl = (function () {
                 if (this.stat === 0) {
                     this.audioSrc.play();
                     this.dance();
@@ -173,7 +173,7 @@
                 }
             }).bind(this)
 
-            var handleDragProgress = (function(evt){
+            var handleDragProgress = (function (evt) {
                 var deltaPercent;
                 evt.target.style.cursor = 'default';
                 evt.preventDefault();
@@ -199,7 +199,7 @@
                 }
             }).bind(this);
 
-            var handleDragStart = (function(evt){
+            var handleDragStart = (function (evt) {
                 evt.target.style.cursor = 'grab';
                 evt.preventDefault();
                 if (evt.changedTouches && evt.changedTouches.length > 0) {
@@ -242,7 +242,7 @@
         __recreateAnalyzer() {
             var audioContext = new (window.AudioContext || window.webkitAudioContext || window.mozAudioContext),
                 source = Object.prototype.toString.call(this.audioSrc) !== '[object MediaStream]' ?
-                audioContext.createMediaElementSource(this.audioSrc) : audioContext.createMediaStreamSource(this.audioSrc);
+                    audioContext.createMediaElementSource(this.audioSrc) : audioContext.createMediaStreamSource(this.audioSrc);
 
             this.analyser = audioContext.createAnalyser();
             this.meta.spr = audioContext.sampleRate;
@@ -252,16 +252,11 @@
             this.analyser.connect(audioContext.destination);
         },
 
-        __rebuildData : function (freqByteData, horizontalAlign) {
+        __rebuildData: function (freqByteData, horizontalAlign) {
 
             var __freqByteData;
 
-            if (horizontalAlign === 'center') {
-                __freqByteData = [].concat(
-                    Array.from(freqByteData).reverse().splice(this.option.accuracy / 2, this.option.accuracy / 2),
-                    Array.from(freqByteData).splice(0, this.option.accuracy / 2)
-                );
-            } else if (horizontalAlign === 'left') {
+            if (horizontalAlign === 'left') {
                 __freqByteData = freqByteData;
             } else if (horizontalAlign === 'right') {
                 __freqByteData = Array.from(freqByteData).reverse();
@@ -276,7 +271,7 @@
 
         },
 
-        readAudioSrc: function(fileEle, vudio, label) {
+        readAudioSrc: function (fileEle, vudio, label) {
             if (fileEle.files.length === 0) {
                 label.innerText = 'Drop Audio file here to play'
                 return;
@@ -285,7 +280,7 @@
             var fr = new FileReader();
             if (file.type.indexOf('audio') !== 0) return;
             label.innerText = file.name;
-            fr.onload = function(evt) {
+            fr.onload = function (evt) {
                 vudio.audioSrc.src = evt.target.result;
                 vudio.audioSrc.play();
                 vudio.dance();
@@ -293,7 +288,7 @@
             fr.readAsDataURL(file);
         },
 
-        __animate : function() {
+        __animate: function () {
             if (this.stat === 1) {
                 this.analyser.getByteFrequencyData(this.freqByteData);
                 (typeof this.effects[this.option.effect] === 'function') && this.effects[this.option.effect](this.freqByteData);
@@ -302,7 +297,7 @@
 
         },
 
-        __testFrame : function() {
+        __testFrame: function () {
             this.analyser.getByteFrequencyData(this.freqByteData);
             (typeof this.__effects()[this.option.effect] === 'function') && this.__effects()[this.option.effect](this.freqByteData);
         },
@@ -310,19 +305,19 @@
         /**
          * render blured background particles
          */
-        __renderMemParticles: function(strokStyle, fillStyle, type) {
+        __renderMemParticles: function (strokStyle, fillStyle, type) {
             // // generate and render particles if enabled 
             if (1) {
                 // should clean dead particle before render, remove the first particle if full.
-                delete this.particles.find(function(p){ return p.dead });
+                delete this.particles.find(function (p) { return p.dead });
                 if (this.particles.length > 50) {
                     this.particles.shift();
                 } else {
                     this.particles.push(new Particle({
                         x: Math.random() * this.width,
-                        y : Math.random() * 100 - 50 + this.height / 2,
-                        vx: Math.random()*.2 - .3,
-                        vy: Math.random()*.3 - .4,
+                        y: Math.random() * 100 - 50 + this.height / 2,
+                        vx: Math.random() * .2 - .3,
+                        vy: Math.random() * .3 - .4,
                         size: Math.random() * 5,
                         life: Math.random() * 50,
                         type: type,
@@ -334,14 +329,14 @@
         },
 
         // effect functions
-        __effects : function() {
+        __effects: function () {
 
             var __that = this;
             var __dotOpacity = [], __dotSize = [];
 
             return {
 
-                lighting : function(freqByteData) {
+                lighting: function (freqByteData) {
 
                     var __lightingOption = __that.option.lighting;
                     var __freqByteData = __that.__rebuildData(freqByteData, __lightingOption.horizontalAlign);
@@ -380,7 +375,7 @@
                             __that.height / 2
                         );
 
-                        __color.forEach(function(color, index) {
+                        __color.forEach(function (color, index) {
                             var __pos, effectiveColor;
                             if (color instanceof Array) {
                                 effectiveColor = color[1];
@@ -398,15 +393,15 @@
                         __that.context2d.fillStyle = __color;
                         __that.context2d.strokeStyle = __color;
                     }
-                    
-                    __freqByteData.forEach(function(value, index) {
+
+                    __freqByteData.forEach(function (value, index) {
 
                         if (__prettify) {
                             // prettify for line should be less maxHeight at tail.
                             if (index < __that.option.accuracy / 2) {
-                                __maxHeight = (1 - (__that.option.accuracy / 2 - 1 - index) / ( __that.option.accuracy / 2)) * __lightingOption.maxHeight;
+                                __maxHeight = (1 - (__that.option.accuracy / 2 - 1 - index) / (__that.option.accuracy / 2)) * __lightingOption.maxHeight;
                             } else {
-                                __maxHeight = (1 - (index - __that.option.accuracy / 2) / ( __that.option.accuracy / 2)) * __lightingOption.maxHeight;
+                                __maxHeight = (1 - (index - __that.option.accuracy / 2) / (__that.option.accuracy / 2)) * __lightingOption.maxHeight;
                             }
                         } else {
                             __maxHeight = __lightingOption.maxHeight;
@@ -414,12 +409,12 @@
 
                         if (__fadeSide) {
                             if (index <= __that.option.accuracy / 2) {
-                                __that.context2d.globalAlpha = 1 - (__that.option.accuracy / 2 - 1 - index) / ( __that.option.accuracy / 2);
+                                __that.context2d.globalAlpha = 1 - (__that.option.accuracy / 2 - 1 - index) / (__that.option.accuracy / 2);
                             } else {
-                                __that.context2d.globalAlpha = 1 - (index - __that.option.accuracy / 2) / ( __that.option.accuracy / 2);
+                                __that.context2d.globalAlpha = 1 - (index - __that.option.accuracy / 2) / (__that.option.accuracy / 2);
                             }
                         } else {
-                           __that.context2d.globalAlpha = 1;
+                            __that.context2d.globalAlpha = 1;
                         }
 
                         __x = __that.width / __that.option.accuracy * index;
@@ -428,7 +423,7 @@
                         if (__lightingOption.verticalAlign === 'middle') {
                             __y = (__that.height - __tmpY) / 2;
                         } else if (__lightingOption.verticalAlign === 'bottom') {
-                            __y =  __that.height - __tmpY;
+                            __y = __that.height - __tmpY;
                         } else if (__lightingOption.verticalAlign === 'top') {
                             __y = __tmpY;
                         } else {
@@ -440,7 +435,7 @@
                             __dotSize[index] = __dotSize[index] !== undefined ? __dotSize[index] : Math.random() * __maxSize + 1;
                             // __dotOpacity[index] = __dotOpacity[index] !== undefined ? __dotOpacity[index] : Math.random();
                             __that.context2d.arc(__x, __y, __dotSize[index], 0, Math.PI * 2);
-                            
+
                             // // make some noise under this x coord
                             // if (__lightingOption.verticalAlign !== 'top') {
                             //     while(__y < (__that.height / 2 - 10)) {
@@ -468,7 +463,7 @@
                     __that.drawBarProgress(__color, __that.audioSrc.currentTime / __that.audioSrc.duration);
                 },
 
-                circlewave: function(freqByteData) {
+                circlewave: function (freqByteData) {
                     var __circlewaveOption = __that.option.circlewave;
                     var __fadeSide = __circlewaveOption.fadeSide;
                     var __prettify = __circlewaveOption.prettify;
@@ -494,7 +489,7 @@
                     __that.context2d.lineWidth = 4;
                     __that.context2d.fillStyle = 'rgba(200, 200, 200, .2)';
                     __that.context2d.translate(__that.width / 2 - .5, __that.height / 2 - .5);
-                              
+
                     if (__circlewaveOption.shadowBlur > 0) {
                         __that.context2d.shadowBlur = __circlewaveOption.shadowBlur;
                         __that.context2d.shadowColor = __circlewaveOption.shadowColor;
@@ -503,37 +498,37 @@
                     // generate and render particles if enabled 
                     if (__particle) {
                         // should clean dead particle before render.
-                        delete __that.particles.find(function(p){return p.dead});
+                        delete __that.particles.find(function (p) { return p.dead });
                         if (__that.particles.length > __maxParticle) {
                             __that.particles.shift();
                         } else {
                             const deg = Math.random() * Math.PI * 2;
                             __that.particles.push(new Particle({
                                 x: (circleRadius + 30) * Math.sin(deg),
-                                y : (circleRadius + 30) * Math.cos(deg),
-                                vx: .3 * Math.sin(deg) + Math.random()*.5 - .3,
-                                vy: .3 * Math.cos(deg) + Math.random()*.5 - .3,
+                                y: (circleRadius + 30) * Math.cos(deg),
+                                vx: .3 * Math.sin(deg) + Math.random() * .5 - .3,
+                                vy: .3 * Math.cos(deg) + Math.random() * .5 - .3,
                                 life: Math.random() * 10,
                             }));
                         }
-  
+
                         __that.particles.forEach((dot) => { dot.update(__that.context2d); });
                     }
 
                     __that.context2d.beginPath();
 
                     // draw circlewave
-                    __freqByteData.forEach(function(value, index){
+                    __freqByteData.forEach(function (value, index) {
 
                         __width = (circleRadius * Math.PI - __that.option.accuracy * __circlewaveOption.spacing) / __that.option.accuracy;
                         __left = index * (__width + __circlewaveOption.spacing);
                         __circlewaveOption.spacing !== 1 && (__left += __circlewaveOption.spacing / 2);
-                        
+
                         if (__prettify) {
                             if (index <= __that.option.accuracy / 2) {
-                                __maxHeight = (1 - (__that.option.accuracy / 2 - 1 - index) / ( __that.option.accuracy / 2)) * __circlewaveOption.maxHeight;
+                                __maxHeight = (1 - (__that.option.accuracy / 2 - 1 - index) / (__that.option.accuracy / 2)) * __circlewaveOption.maxHeight;
                             } else {
-                                __maxHeight = (1 - (index - __that.option.accuracy / 2) / ( __that.option.accuracy / 2)) * __circlewaveOption.maxHeight;
+                                __maxHeight = (1 - (index - __that.option.accuracy / 2) / (__that.option.accuracy / 2)) * __circlewaveOption.maxHeight;
                             }
                         } else {
                             __maxHeight = __circlewaveOption.maxHeight;
@@ -551,7 +546,7 @@
                                 circleRadius + __maxHeight
                             );
 
-                            __color.forEach(function(color, index) {
+                            __color.forEach(function (color, index) {
                                 var __pos, effectiveColor;
                                 if (color instanceof Array) {
                                     effectiveColor = color[1];
@@ -561,7 +556,7 @@
                                 __pos = index / __color.length;
                                 __linearGradient.addColorStop(__pos, effectiveColor);
                             });
-                            
+
                             __that.context2d.strokeStyle = __linearGradient;
                             __that.context2d.fillStyle = __linearGradient;
                         } else {
@@ -571,17 +566,17 @@
 
                         if (__fadeSide) {
                             if (index <= __that.option.accuracy / 2) {
-                                __that.context2d.globalAlpha = 1 - (__that.option.accuracy / 2 - 1 - index) / ( __that.option.accuracy / 2);
+                                __that.context2d.globalAlpha = 1 - (__that.option.accuracy / 2 - 1 - index) / (__that.option.accuracy / 2);
                             } else {
-                                __that.context2d.globalAlpha = 1 - (index - __that.option.accuracy / 2) / ( __that.option.accuracy / 2);
+                                __that.context2d.globalAlpha = 1 - (index - __that.option.accuracy / 2) / (__that.option.accuracy / 2);
                             }
                         } else {
-                           __that.context2d.globalAlpha = 1;
+                            __that.context2d.globalAlpha = 1;
                         }
 
                         var curAngle = __angle * index;
                         var __x = Math.sin(curAngle) * (circleRadius + __height);
-                        var __y = Math.cos(curAngle) * (circleRadius + __height); 
+                        var __y = Math.cos(curAngle) * (circleRadius + __height);
 
                         // __that.context2d.rotate(__angle * index);
                         if (__isStart) {
@@ -605,7 +600,7 @@
                     __that.context2d.restore();
                 },
 
-                circlebar: function(freqByteData) {
+                circlebar: function (freqByteData) {
                     var __circlebarOption = __that.option.circlebar;
                     var __fadeSide = __circlebarOption.fadeSide;
                     var __prettify = __circlebarOption.prettify;
@@ -628,7 +623,7 @@
                     __that.context2d.clearRect(0, 0, __that.width, __that.height);
                     __that.context2d.save();
                     __that.context2d.translate(__that.width / 2 - .5, __that.height / 2 - .5);
-                    
+
                     if (__circlebarOption.shadowBlur > 0) {
                         __that.context2d.shadowBlur = __circlebarOption.shadowBlur;
                         __that.context2d.shadowColor = __circlebarOption.shadowColor;
@@ -636,16 +631,16 @@
 
                     // generate and render particles if enabled 
                     if (__particle) {
-                        delete __that.particles.find(function(p){return p.dead});
+                        delete __that.particles.find(function (p) { return p.dead });
                         if (__that.particles.length > __maxParticle) {
                             __that.particles.shift();
                         } else {
                             const deg = Math.random() * Math.PI * 2;
                             __that.particles.push(new Particle({
                                 x: (circleRadius + 20) * Math.sin(deg),
-                                y : (circleRadius + 20) * Math.cos(deg),
-                                vx: .3 * Math.sin(deg) + Math.random()*.5 - .3,
-                                vy: .3 * Math.cos(deg) + Math.random()*.5 - .3,
+                                y: (circleRadius + 20) * Math.cos(deg),
+                                vx: .3 * Math.sin(deg) + Math.random() * .5 - .3,
+                                vy: .3 * Math.cos(deg) + Math.random() * .5 - .3,
                                 life: Math.random() * 10,
                                 // type: 'rect'
                             }));
@@ -669,12 +664,12 @@
                         var value = __freqByteData[index];
                         __left = index * (__width + __circlebarOption.spacing);
                         __circlebarOption.spacing !== 1 && (__left += __circlebarOption.spacing / 2);
-                        
+
                         if (false) {
                             if (index <= __that.option.accuracy / 2) {
-                                __maxHeight = (1 - (__that.option.accuracy / 2 - 1 - index) / ( __that.option.accuracy / 2)) * __circlebarOption.maxHeight;
+                                __maxHeight = (1 - (__that.option.accuracy / 2 - 1 - index) / (__that.option.accuracy / 2)) * __circlebarOption.maxHeight;
                             } else {
-                                __maxHeight = (1 - (index - __that.option.accuracy / 2) / ( __that.option.accuracy / 2)) * __circlebarOption.maxHeight;
+                                __maxHeight = (1 - (index - __that.option.accuracy / 2) / (__that.option.accuracy / 2)) * __circlebarOption.maxHeight;
                             }
                         } else {
                             __maxHeight = __circlebarOption.maxHeight;
@@ -685,26 +680,27 @@
 
                         if (__fadeSide) {
                             if (index <= __that.option.accuracy / 2) {
-                                __that.context2d.globalAlpha = 1 - (__that.option.accuracy / 2 - 1 - index) / ( __that.option.accuracy / 2);
+                                __that.context2d.globalAlpha = 1 - (__that.option.accuracy / 2 - 1 - index) / (__that.option.accuracy / 2);
                             } else {
-                                __that.context2d.globalAlpha = 1 - (index - __that.option.accuracy / 2) / ( __that.option.accuracy / 2);
+                                __that.context2d.globalAlpha = 1 - (index - __that.option.accuracy / 2) / (__that.option.accuracy / 2);
                             }
                         }
 
                         __that.context2d.rotate(__angle);
-                        __that.context2d.fillRect(__offsetX, circleRadius, __width, __height);
-                        __that.context2d.fill();
+                        __that.context2d.rect(__offsetX, circleRadius, __width, __height);
                     }
+                    __that.context2d.closePath();
+                    __that.context2d.fill();
 
                     __that.drawCover(__progress, circleRadius);
                     if (__showProgress) { __that.drawProgress(renderStyle, __progress, circleRadius); }
-                    
+
                     // need to restore canvas after translate to center..
                     __that.context2d.restore();
 
                 },
 
-                waveform : function (freqByteData) {
+                waveform: function (freqByteData) {
 
                     var __waveformOption = __that.option.waveform;
                     var __fadeSide = __waveformOption.fadeSide;
@@ -721,23 +717,24 @@
                     __that.context2d.clearRect(0, 0, __that.width, __that.height);
 
                     // draw waveform
-                    __freqByteData.forEach(function(value, index){
+                    __freqByteData.forEach(function (value, index) {
 
                         __width = (__that.width - __that.option.accuracy * __waveformOption.spacing) / __that.option.accuracy;
                         __left = index * (__width + __waveformOption.spacing);
                         __waveformOption.spacing !== 1 && (__left += __waveformOption.spacing / 2);
-                        
+
                         if (__prettify) {
+                            // enable soft slope along side frequency axes
                             if (index <= __that.option.accuracy / 2) {
-                                __maxHeight = (1 - (__that.option.accuracy / 2 - 1 - index) / ( __that.option.accuracy / 2)) * __waveformOption.maxHeight;
+                                __maxHeight = (1 - (__that.option.accuracy / 2 - 1 - index) / (__that.option.accuracy / 2)) * __waveformOption.maxHeight;
                             } else {
-                                __maxHeight = (1 - (index - __that.option.accuracy / 2) / ( __that.option.accuracy / 2)) * __waveformOption.maxHeight;
+                                __maxHeight = (1 - (index - __that.option.accuracy / 2) / (__that.option.accuracy / 2)) * __waveformOption.maxHeight;
                             }
                         } else {
                             __maxHeight = __waveformOption.maxHeight;
                         }
 
-                        __height = value / 256 * __maxHeight;    
+                        __height = value / 256 * __maxHeight;
                         __height = __height < __waveformOption.minHeight ? __waveformOption.minHeight : __height;
 
                         if (__waveformOption.verticalAlign === 'middle') {
@@ -761,14 +758,14 @@
                                 __top + __height
                             );
 
-                            __color.forEach(function(color, index) {
+                            __color.forEach(function (color, index) {
                                 if (color instanceof Array) {
                                     __pos = color[0];
                                     color = color[1];
                                 } else if (index === 0 || index === __color.length - 1) {
                                     __pos = index / (__color.length - 1);
                                 } else {
-                                    __pos =  index / __color.length + 0.5 / __color.length;
+                                    __pos = index / __color.length + 0.5 / __color.length;
                                 }
                                 __linearGradient.addColorStop(__pos, color);
                             });
@@ -786,12 +783,12 @@
 
                         if (__fadeSide) {
                             if (index <= __that.option.accuracy / 2) {
-                                __that.context2d.globalAlpha = 1 - (__that.option.accuracy / 2 - 1 - index) / ( __that.option.accuracy / 2);
+                                __that.context2d.globalAlpha = 1 - (__that.option.accuracy / 2 - 1 - index) / (__that.option.accuracy / 2);
                             } else {
-                                __that.context2d.globalAlpha = 1 - (index - __that.option.accuracy / 2) / ( __that.option.accuracy / 2);
+                                __that.context2d.globalAlpha = 1 - (index - __that.option.accuracy / 2) / (__that.option.accuracy / 2);
                             }
                         } else {
-                           __that.context2d.globalAlpha = 1;
+                            __that.context2d.globalAlpha = 1;
                         }
 
                         __that.context2d.fillRect(__left, __top, __width, __height);
@@ -805,7 +802,7 @@
 
         },
 
-        dance : function() {
+        dance: function () {
             if (this.stat === 0 || this.analyser.context.state === 'suspended') {
                 this.analyser.context.resume();
                 this.stat = 1;
@@ -814,17 +811,17 @@
             return this;
         },
 
-        pause : function() {
+        pause: function () {
             this.stat = 0;
             //// for saving CPU, could cancle animation.
             return this;
         },
 
-        setOption : function(option) {
+        setOption: function (option) {
             this.option = __mergeOption(this.option, option);
         },
 
-        drawCover: function(__progress, circleRadius) {
+        drawCover: function (__progress, circleRadius) {
             var __that = this;
             // draw cover image
             if (__that.coverImg.width !== 0) {
@@ -836,21 +833,21 @@
                 __that.context2d.globalCompositeOperation = 'source-over';
                 __that.context2d.beginPath();
 
-                __that.context2d.arc(0, 0, circleRadius - 13, -Math.PI/2, Math.PI * 2);
+                __that.context2d.arc(0, 0, circleRadius - 13, -Math.PI / 2, Math.PI * 2);
                 __that.context2d.clip();
                 __that.context2d.rotate(Math.PI * 2 * __progress * 2);
 
-                if (img.width/img.height > 1) {
-                    var croppedImgWidth = circleRadius*2*(img.width-img.height)/(img.height);
-                    __that.context2d.drawImage(img, -circleRadius-10-croppedImgWidth/2, -circleRadius-10,circleRadius*2*img.width/img.height,circleRadius*2);
+                if (img.width / img.height > 1) {
+                    var croppedImgWidth = circleRadius * 2 * (img.width - img.height) / (img.height);
+                    __that.context2d.drawImage(img, -circleRadius - 10 - croppedImgWidth / 2, -circleRadius - 10, circleRadius * 2 * img.width / img.height, circleRadius * 2);
                 } else {
-                    __that.context2d.drawImage(img, -circleRadius-10, -circleRadius-10,circleRadius*2,circleRadius*2*img.height/img.width);
+                    __that.context2d.drawImage(img, -circleRadius - 10, -circleRadius - 10, circleRadius * 2, circleRadius * 2 * img.height / img.width);
                 }
                 __that.context2d.restore();
             }
         },
 
-        drawProgress: function(__color, __progress, circleRadius) {
+        drawProgress: function (__color, __progress, circleRadius) {
             // draw progress circular.
             var __that = this;
             __that.context2d.beginPath();
@@ -859,11 +856,11 @@
                 __that.context2d.lineWidth = 4;
                 __that.context2d.lineCap = 'round';
             }
-            __that.context2d.arc(0, 0, circleRadius - 10, -Math.PI/2, Math.PI * 2 * __progress - Math.PI/2 );     
+            __that.context2d.arc(0, 0, circleRadius - 10, -Math.PI / 2, Math.PI * 2 * __progress - Math.PI / 2);
             __that.context2d.stroke();
         },
 
-        drawBarProgress: function(__color='#eee', __progress) {
+        drawBarProgress: function (__color = '#eee', __progress) {
             var __that = this;
             var canv = __that.context2d.canvas;
             var lineY = canv.height * .7;
@@ -887,4 +884,4 @@
 
     return Vudio;
 
- });
+});
